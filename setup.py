@@ -15,13 +15,34 @@ GOOD_COLLECTIBLE_COMMON_PATH = "assets/collectibles/good/hueso_medio.png"
 GOOD_COLLECTIBLE_UNCOMMON_PATH = "assets/collectibles/good/hueso.png"
 GOOD_COLLECTIBLE_RARE_PATH = "assets/collectibles/good/hueso_oro.png"
 
+# random < drop_rate -> spawn type
+GOOD_COLLECTIBLE_COMMON_DROP_RATE = 0.75
+GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE = 0.5
+GOOD_COLLECTIBLE_RARE_DROP_RATE = 0.25
+
+# Points
+GOOD_COLLECTIBLE_COMMON_POINTS = 10
+GOOD_COLLECTIBLE_UNCOMMON_POINTS = 20
+GOOD_COLLECTIBLE_RARE_POINTS = 50
+
 ### Bad
 BAD_COLLECTIBLE_COMMON_PATH = "assets/collectibles/bad/aguacate.png"
 BAD_COLLECTIBLE_UNCOMMON_PATH = "assets/collectibles/bad/champinion.png"
 BAD_COLLECTIBLE_RARE_PATH = "assets/collectibles/bad/chocolate.png"
 
+BAD_COLLECTIBLE_COMMON_DROP_RATE = 0.75
+BAD_COLLECTIBLE_UNCOMMON_DROP_RATE = 0.5
+BAD_COLLECTIBLE_RARE_DROP_RATE = 0.25
+
+# Points
+BAD_COLLECTIBLE_COMMON_POINTS = -10
+BAD_COLLECTIBLE_UNCOMMON_POINTS = -20
+BAD_COLLECTIBLE_RARE_POINTS = -50
+
 ### Power Ups
 POWER_UPS_COLLECTIBLE_COMMON_PATH = "assets/collectibles/power_ups/correa.png"
+
+POWER_UPS_COLLECTIBLE_COMMON_DROP_RATE = 0.5
 
 ## Enemies
 ENEMY_1_PATH = "assets/enemies/aspersor.png"
@@ -30,7 +51,9 @@ ENEMY_2_PATH = "assets/enemies/frisbee.png"
 # Scaling and positioning
 CHARACTER_SCALING = 0.5
 TILE_SCALING = 0.5
-COLLECTIBLE_SCALING = 0.25
+COLLECTIBLE_SCALING = 0.125
+
+TILE_SIZE = 32
 
 # CONSTANTS
 GRAVITY = 1
@@ -39,6 +62,13 @@ GRAVITY = 1
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 650
 SCREEN_TITLE = "Husky Wars!"
+
+## Scores display
+P1_SCORE_X = 10
+P1_SCORE_Y = SCREEN_HEIGHT - 30
+
+P2_SCORE_X = SCREEN_WIDTH - 120
+P2_SCORE_Y = SCREEN_HEIGHT - 30
 
 
 # Coordinates

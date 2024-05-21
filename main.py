@@ -1,7 +1,7 @@
-import arcade
-from setup import SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, CHARACTER_SCALING, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH
+import arcade, random
+from setup import BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, CHARACTER_SCALING, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE
 from scripts.player import Player
-from scripts.collectible import Coin, Powerup
+from scripts.collectible import Coin, Trap, Powerup
 
 
 class MyGame(arcade.Window):
@@ -12,6 +12,8 @@ class MyGame(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         
+        self.tile_map = None
+        self.collectible_layer = None
         self.scene = None
         self.p1_sprite = None
         self.p2_sprite = None
@@ -26,40 +28,80 @@ class MyGame(arcade.Window):
         
         self.scene = arcade.Scene()
         
+        map_name = ":resources:tiled_maps/map.json"
+
+        layer_options = {
+            "Platforms": {
+                "use_spatial_hash": True,
+            },
+        }
+
+        
+        self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
+        self.collectible_layer = self.tile_map.get_tilemap_layer("Coins")        
+
+        self.scene = arcade.Scene.from_tilemap(self.tile_map)
+        
         self.p1_sprite = Player("P1", 0, (P1_START_X, P1_START_Y), P1_STILL_PATH, P1_SPEED, P1_JUMP_SPEED, P1_KEYBINDINGS)
         self.p2_sprite = Player("P2", 0, (P2_START_X, P2_START_Y), P2_STILL_PATH, P2_SPEED, P2_JUMP_SPEED, P2_KEYBINDINGS)
         
         self.scene.add_sprite("Player", self.p1_sprite)                        
-        self.scene.add_sprite("Player", self.p2_sprite)                        
-                           
-        # Tile generation
-        for x in range(0, 1250, 64):
-            wall = arcade.Sprite(":resources:images/tiles/grassMid.png", TILE_SCALING)
-            wall.center_x = x
-            wall.center_y = 32
-            self.scene.add_sprite("Walls", wall)
+        self.scene.add_sprite("Player", self.p2_sprite)
         
-        coordinate_list = [[512, 96], [256, 96], [768, 96]]
+        self.collectible_list = arcade.SpriteList()
 
-        # Crate generation
-        for coordinate in coordinate_list:
-            # Add a crate on the ground
-            wall = arcade.Sprite(
-                ":resources:images/tiles/boxCrate_double.png", TILE_SCALING
-            )
-            wall.position = coordinate
-            self.scene.add_sprite("Walls", wall)
+        # Define possible collectible types
+        collectible_types = ["Coin", "Trap"]
+        
+
+        # Iterate over spawn points and create collectibles
+        for row_index, row in enumerate(self.collectible_layer.data):
             
-        # Static good collectible spawning
-        for x in range(128, 1250, 256):
-            collectible = Coin(GOOD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, 10, "common", 0.75)
-            collectible.center_x = x
-            collectible.center_y = 96
-            self.scene.add_sprite("Coins", collectible)
-            
-        # Physics engine setup
-        self.p1_sprite.setup(self.scene["Walls"], self.jump_sound)        
-        self.p2_sprite.setup(self.scene["Walls"], self.jump_sound)        
+            for column_index, tile_id in enumerate(row):
+                if tile_id == 0:
+                    continue
+                collectible = None
+                x = column_index * TILE_SIZE + TILE_SIZE // 2
+                y = (self.collectible_layer.size.height - row_index - 1) * TILE_SIZE + TILE_SIZE // 2 
+                collectible_type = random.choice(collectible_types)  # Randomly choose the type
+
+                if collectible_type == "Coin":
+                    
+                    if random.random() < GOOD_COLLECTIBLE_RARE_DROP_RATE:
+                        collectible = Coin(GOOD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_RARE_POINTS)
+                    elif random.random() < GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE:
+                        collectible = Coin(GOOD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_UNCOMMON_POINTS)
+                    elif random.random() <= GOOD_COLLECTIBLE_COMMON_DROP_RATE:
+                        collectible = Coin(GOOD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_POINTS)
+                    
+                    collectible.setup(self.collect_coin_sound, (x, y))
+                    
+                        
+                elif collectible_type == "Trap":
+                 
+                    if random.random() < BAD_COLLECTIBLE_RARE_DROP_RATE:
+                        collectible = Coin(BAD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_RARE_POINTS)
+                    elif random.random() < BAD_COLLECTIBLE_UNCOMMON_DROP_RATE:
+                        collectible = Coin(BAD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_UNCOMMON_POINTS)
+                    elif random.random() <= BAD_COLLECTIBLE_COMMON_DROP_RATE:
+                        collectible = Coin(BAD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_COMMON_POINTS)
+
+                    collectible.setup(self.collect_coin_sound, (x, y))
+                                
+                # Only add to the lists if a collectible was created
+                if collectible is not None:  
+                    collectible.setup(self.collect_coin_sound, (x, y))
+                    self.collectible_list.append(collectible)
+                    self.scene.add_sprite("Coins", collectible)                        
+        
+         # Set the background color
+        if self.tile_map.background_color:
+            arcade.set_background_color(self.tile_map.background_color)
+
+                    
+        self.p1_sprite.setup(self.scene["Platforms"], self.jump_sound, (P1_SCORE_X, P1_SCORE_Y))        
+        self.p2_sprite.setup(self.scene["Platforms"], self.jump_sound, (P2_SCORE_X, P2_SCORE_Y))
+                
 
 
 
@@ -67,6 +109,8 @@ class MyGame(arcade.Window):
         """Render the screen."""        
         self.clear()        
         self.scene.draw()
+        self.p1_sprite.draw_gui()
+        self.p2_sprite.draw_gui()
 
     def on_key_press(self, key, modifiers):
         self.p1_sprite.on_key_press(key, modifiers)
@@ -80,14 +124,19 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time: float):
         self.p1_sprite.update()
         self.p2_sprite.update()
-                
-        # Combined collision check
-        coin_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene["Coins"])
-        coin_hit_list.extend(arcade.check_for_collision_with_list(self.p2_sprite, self.scene["Coins"]))
         
-        for coin in coin_hit_list:            
-            coin.remove_from_sprite_lists()            
-            arcade.play_sound(self.collect_coin_sound)
+                
+         # Separate collision checks
+        player1_coin_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene["Coins"])
+        player2_coin_hit_list = arcade.check_for_collision_with_list(self.p2_sprite, self.scene["Coins"])
+
+        for coin in player1_coin_hit_list:
+            coin.collect(self.p1_sprite)  # Update only Player 1's score
+            coin.update()
+
+        for coin in player2_coin_hit_list:
+            coin.collect(self.p2_sprite)  # Update only Player 2's score
+            coin.update() 
 
 
 def main():
