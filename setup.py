@@ -28,8 +28,12 @@ ENEMY_1_PATH = "assets/enemies/aspersor.png"
 ENEMY_2_PATH = "assets/enemies/frisbee.png"
 
 # Scaling and positioning
-CHARACTER_SCALING = 1
+CHARACTER_SCALING = 0.5
 TILE_SCALING = 0.5
+COLLECTIBLE_SCALING = 0.25
+
+# CONSTANTS
+GRAVITY = 1
 
 # Window
 SCREEN_WIDTH = 1000
@@ -47,6 +51,9 @@ P2_START_Y = 128
 # STATS
 P1_SPEED = 5
 P2_SPEED = 5
+
+P1_JUMP_SPEED = 20
+P2_JUMP_SPEED = 20
 
 
 # Key bindings
