@@ -112,5 +112,8 @@ P2_KEYBINDINGS = {
 }
 
 
-
-# Drop Rates
+# Layers
+LAYER_NAME_PLATFORMS = "Platforms"
+LAYER_NAME_COLLECTIBLES = "Coins"
+LAYER_NAME_BACKGROUND = "Background"
+LAYER_NAME_PLAYER_SPAWN = "Player"
