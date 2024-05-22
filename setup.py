@@ -1,12 +1,14 @@
 import arcade
 import arcade.key
 # Paths to image assets
+P1_ANIMATIONS_PATH = "assets/character/p1"
+P2_ANIMATIONS_PATH = "assets/character/p2"
 
 ## P1
-P1_STILL_PATH = "assets/character/p1_still.png"
+P1_STILL_PATH = f"{P1_ANIMATIONS_PATH}/idle.png"
 
 ## P2
-P2_STILL_PATH = "assets/character/p2_still.png"
+P2_STILL_PATH = f"{P1_ANIMATIONS_PATH}/idle.png"
 
 ## Collectibles
 
@@ -49,7 +51,7 @@ ENEMY_1_PATH = "assets/enemies/aspersor.png"
 ENEMY_2_PATH = "assets/enemies/frisbee.png"
 
 # Scaling and positioning
-CHARACTER_SCALING = 0.5
+CHARACTER_SCALING = 1
 TILE_SCALING = 0.5
 COLLECTIBLE_SCALING = 0.125
 
@@ -117,3 +119,11 @@ LAYER_NAME_PLATFORMS = "Platforms"
 LAYER_NAME_COLLECTIBLES = "Coins"
 LAYER_NAME_BACKGROUND = "Background"
 LAYER_NAME_PLAYER_SPAWN = "Player"
+
+# Animations
+RIGHT_FACING = 1
+LEFT_FACING = 0
+
+P1_INITIAL_FACING = RIGHT_FACING
+P2_INITIAL_FACING = LEFT_FACING
+
