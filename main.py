@@ -1,4 +1,4 @@
-import arcade, random
+import arcade, random, math
 from setup import BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_PROJECTILE, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH
 from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
@@ -31,9 +31,8 @@ class MyGame(arcade.Window):
         
         self.scene = arcade.Scene()
         
-        # map_name = TILE_MAP_PATH
+        map_name = TILE_MAP_PATH
         
-        map_name = ":resources:tiled_maps/map.json"
         # layer_options = {
         #     LAYER_NAME_PLATFORMS: {
         #         "use_spatial_hash": True,
@@ -61,8 +60,8 @@ class MyGame(arcade.Window):
         
         # self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING)
-        # self.collectible_layer = self.tile_map.get_tilemap_layer(OBJECT_NAME_COLLECTIBLES)        
-        self.collectible_layer = self.tile_map.get_tilemap_layer("Coins")        
+        self.collectible_layer = self.tile_map.object_lists[OBJECT_NAME_COLLECTIBLES]        
+        # self.collectible_layer = self.tile_map.get_tilemap_layer("Coins")        
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
         
@@ -88,62 +87,67 @@ class MyGame(arcade.Window):
         self.countdown.start()
         self.countdown_text = f"{self.countdown.remaining_time}"
                 
-
+    
     def generate_collectibles(self):
         # Define possible collectible types
         collectible_types = ["Coin", "Trap"]                        
         # Iterate over spawn points and create collectibles
-        for row_index, row in enumerate(self.collectible_layer.data):
+        for my_object in self.collectible_layer:
+            cartesian = self.tile_map.get_cartesian(
+                my_object.shape[0], my_object.shape[1]
+            )
+            # if tile_id == 0:
+            #     continue
+            collectible = None
             
-            for column_index, tile_id in enumerate(row):
-                if tile_id == 0:
-                    continue
-                collectible = None
-                x = column_index * TILE_SIZE + TILE_SIZE // 2
-                y = (self.collectible_layer.size.height - row_index - 1) * TILE_SIZE + TILE_SIZE // 2 
-                
-                # Check for existing collectibles at this position
-                existing_collectible = None
-                for collectible in self.collectible_list:
-                    if collectible.center_x == x and collectible.center_y == y:
-                        existing_collectible = collectible
-                        break  # Exit the loop if found
+            
+            # Check for existing collectibles at this position
+            existing_collectible = None
+            # for collectible in self.collectible_list:
+            #     if collectible.center_x == x and collectible.center_y == y:
+            #         existing_collectible = collectible
+            #         break  # Exit the loop if found
 
-                # If no existing collectible found, spawn a new one
-                if existing_collectible is None: 
-                        
-                    collectible_type = random.choice(collectible_types)  # Randomly choose the type
+            # If no existing collectible found, spawn a new one
+            if existing_collectible is None: 
                     
-                    if collectible_type == "Coin":
-                        
-                        if random.random() < GOOD_COLLECTIBLE_RARE_DROP_RATE:
-                            collectible = Coin(GOOD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_RARE_POINTS)
-                        elif random.random() < GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE:
-                            collectible = Coin(GOOD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_UNCOMMON_POINTS)
-                        elif random.random() <= GOOD_COLLECTIBLE_COMMON_DROP_RATE:
-                            collectible = Coin(GOOD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_POINTS)
-                        
-                        if collectible is not None:
-                            collectible.setup(self.collect_coin_sound, (x, y))
-                        
-                            
-                    elif collectible_type == "Trap":
+                collectible_type = random.choice(collectible_types)  # Randomly choose the type
+                
+                if collectible_type == "Coin":
                     
-                        if random.random() < BAD_COLLECTIBLE_RARE_DROP_RATE:
-                            collectible = Coin(BAD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_RARE_POINTS)
-                        elif random.random() < BAD_COLLECTIBLE_UNCOMMON_DROP_RATE:
-                            collectible = Coin(BAD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_UNCOMMON_POINTS)
-                        elif random.random() <= BAD_COLLECTIBLE_COMMON_DROP_RATE:
-                            collectible = Coin(BAD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_COMMON_POINTS)
-                            
-                        if collectible is not None:
-                            collectible.setup(self.collect_coin_sound, (x, y))
-                                    
-                    # Only add to the lists if a collectible was created
-                    if collectible is not None:  
-                        collectible.setup(self.collect_coin_sound, (x, y))
-                        self.collectible_list.append(collectible)
-                        self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible)                        
+                    if random.random() < GOOD_COLLECTIBLE_RARE_DROP_RATE:
+                        collectible = Coin(GOOD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_RARE_POINTS)
+                    elif random.random() < GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE:
+                        collectible = Coin(GOOD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_UNCOMMON_POINTS)
+                    elif random.random() <= GOOD_COLLECTIBLE_COMMON_DROP_RATE:
+                        collectible = Coin(GOOD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_POINTS)
+                    
+                    # if collectible is not None:
+                    #     collectible.setup(self.collect_coin_sound, (x, y))
+                    
+                        
+                elif collectible_type == "Trap":
+                
+                    if random.random() < BAD_COLLECTIBLE_RARE_DROP_RATE:
+                        collectible = Coin(BAD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_RARE_POINTS)
+                    elif random.random() < BAD_COLLECTIBLE_UNCOMMON_DROP_RATE:
+                        collectible = Coin(BAD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_UNCOMMON_POINTS)
+                    elif random.random() <= BAD_COLLECTIBLE_COMMON_DROP_RATE:
+                        collectible = Coin(BAD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_COMMON_POINTS)
+                        
+                    # if collectible is not None:
+                    #     collectible.setup(self.collect_coin_sound, (x, y))
+                                
+                # Only add to the lists if a collectible was created
+                if collectible is not None:  
+                    collectible.center_x = math.floor(
+                        cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+                    )
+                    collectible.center_y = math.floor(
+                        (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+                    )
+                    self.collectible_list.append(collectible)
+                    self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible)                        
         
     def match_duration_countdown(self):
         pass        
@@ -176,9 +180,9 @@ class MyGame(arcade.Window):
         self.p1_sprite.update()
         self.p2_sprite.update()
         
-        # Check collectible spawn cooldown to regenerate collectibles
-        if self.countdown.remaining_time % 5 == 0:
-            self.generate_collectibles()
+        # # Check collectible spawn cooldown to regenerate collectibles
+        # if self.countdown.remaining_time % 5 == 0:
+        #     self.generate_collectibles()
         
                 
          # Separate collision checks
