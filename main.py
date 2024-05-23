@@ -33,35 +33,34 @@ class MyGame(arcade.Window):
         
         map_name = TILE_MAP_PATH
         
-        # layer_options = {
-        #     LAYER_NAME_PLATFORMS: {
-        #         "use_spatial_hash": True,
-        #     },
-        #     OBJECT_NAME_COLLECTIBLES: {
-        #         "use_spatial_hash": True,
-        #     },
-        #     LAYER_NAME_BACKGROUND: {
-        #         "use_spatial_hash": True,
-        #     },
-        #     LAYER_NAME_METABACKGROUND: {
-        #         "use_spatial_hash": True,
-        #     },
-        #     OBJECT_NAME_PLAYER_SPAWN: {
-        #         "use_spatial_hash": True,
-        #     },
-        #     OBJECT_NAME_ENEMY_SPAWN: {
-        #         "use_spatial_hash": True,
-        #     },
-        #     OBJECT_NAME_PROJECTILE: {
-        #         "use_spatial_hash": True,
-        #     }
-        # }
+        layer_options = {
+            LAYER_NAME_PLATFORMS: {
+                "use_spatial_hash": True,
+            },
+            OBJECT_NAME_COLLECTIBLES: {
+                "use_spatial_hash": True,
+            },
+            LAYER_NAME_BACKGROUND: {
+                "use_spatial_hash": True,
+            },
+            LAYER_NAME_METABACKGROUND: {
+                "use_spatial_hash": True,
+            },
+            OBJECT_NAME_PLAYER_SPAWN: {
+                "use_spatial_hash": True,
+            },
+            OBJECT_NAME_ENEMY_SPAWN: {
+                "use_spatial_hash": True,
+            },
+            OBJECT_NAME_PROJECTILE: {
+                "use_spatial_hash": True,
+            }
+        }
 
         
-        # self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
-        self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING)
-        self.collectible_layer = self.tile_map.object_lists[OBJECT_NAME_COLLECTIBLES]        
-        # self.collectible_layer = self.tile_map.get_tilemap_layer("Coins")        
+        self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
+        # self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING)
+        self.collectible_layer = self.tile_map.object_lists[OBJECT_NAME_COLLECTIBLES]         
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
         
@@ -92,23 +91,28 @@ class MyGame(arcade.Window):
         # Define possible collectible types
         collectible_types = ["Coin", "Trap"]                        
         # Iterate over spawn points and create collectibles
-        for my_object in self.collectible_layer:
+        for collectible_object in self.collectible_layer:
             cartesian = self.tile_map.get_cartesian(
-                my_object.shape[0], my_object.shape[1]
+                collectible_object.shape[0], collectible_object.shape[1]
             )
-            # if tile_id == 0:
-            #     continue
+            print(collectible_object)
             collectible = None
             
             
             # Check for existing collectibles at this position
             existing_collectible = None
-            # for collectible in self.collectible_list:
-            #     if collectible.center_x == x and collectible.center_y == y:
-            #         existing_collectible = collectible
-            #         break  # Exit the loop if found
+    
 
             # If no existing collectible found, spawn a new one
+            for sprite in self.collectible_list:
+                if sprite.center_x == math.floor(
+                    cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+                ) and sprite.center_y == math.floor(
+                    (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+                ):
+                    existing_collectible = sprite
+                    break
+                
             if existing_collectible is None: 
                     
                 collectible_type = random.choice(collectible_types)  # Randomly choose the type
@@ -180,9 +184,10 @@ class MyGame(arcade.Window):
         self.p1_sprite.update()
         self.p2_sprite.update()
         
-        # # Check collectible spawn cooldown to regenerate collectibles
-        # if self.countdown.remaining_time % 5 == 0:
-        #     self.generate_collectibles()
+        # Check collectible spawn cooldown to regenerate collectibles
+        if self.countdown.remaining_time % 5 == 0:
+            # print("Regenerating collectibles")
+            self.generate_collectibles()
         
                 
          # Separate collision checks
