@@ -12,6 +12,8 @@ P2_STILL_PATH = f"{P1_ANIMATIONS_PATH}/idle.png"
 
 ## Collectibles
 
+COLLECTIBLE_SPAWN_COOLDOWN = 5
+
 ### Good
 GOOD_COLLECTIBLE_COMMON_PATH = "assets/collectibles/good/hueso_medio.png"
 GOOD_COLLECTIBLE_UNCOMMON_PATH = "assets/collectibles/good/hueso.png"
@@ -61,8 +63,13 @@ TILE_SIZE = 32
 GRAVITY = 1
 
 # Window
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 650
+TILE_WIDTH = 40
+TILE_HEIGHT = 22
+
+TILE_MAP_PATH = "assets/con-enemigos.json"
+
+SCREEN_WIDTH = TILE_SIZE * TILE_WIDTH
+SCREEN_HEIGHT = TILE_SIZE * TILE_HEIGHT
 SCREEN_TITLE = "Husky Wars!"
 
 ## Scores display
@@ -115,10 +122,38 @@ P2_KEYBINDINGS = {
 
 
 # Layers
-LAYER_NAME_PLATFORMS = "Platforms"
-LAYER_NAME_COLLECTIBLES = "Coins"
-LAYER_NAME_BACKGROUND = "Background"
-LAYER_NAME_PLAYER_SPAWN = "Player"
+LAYER_NAME_PLATFORMS = "platforms"
+OBJECT_NAME_COLLECTIBLES = "collectible"
+LAYER_NAME_BACKGROUND = "background"
+LAYER_NAME_METABACKGROUND = "Capa de patrones 3"
+OBJECT_NAME_PLAYER_SPAWN = "player"
+OBJECT_NAME_ENEMY_SPAWN = "enemy"
+OBJECT_NAME_PROJECTILE = "projectile"
+
+## Custom attributes
+OBJECT_PLAYER_ID_ATTR = "player_id"
+P1_SPAWN_ID = "player1"
+P2_SPAWN_ID = "player2"
+
+OBJECT_PROJECTILE_FRISBEE_ATTR = "frisbee_id"
+OBJECT_ENEMY_ASPERSOR_ATTR = "enemy_id"
+
+FRISBEE_1_ID = "frisbee1"
+FRISBEE_2_ID = "frisbee2"
+
+ASPERSOR_1_ID = "enemy1"
+ASPERSOR_2_ID = "enemy2"
+ASPERSOR_3_ID = "enemy3"
+ASPERSOR_4_ID = "enemy4"
+
+
+ASPERSOR_1_PROJECTILE_ID = "agua1"
+ASPERSOR_2_PROJECTILE_ID = "agua2"
+ASPERSOR_3_PROJECTILE_ID = "agua3"
+ASPERSOR_4_PROJECTILE_ID = "agua4"
+
+
+
 
 # Animations
 RIGHT_FACING = 1
