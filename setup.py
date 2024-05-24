@@ -49,11 +49,18 @@ POWER_UPS_COLLECTIBLE_COMMON_PATH = "assets/collectibles/power_ups/correa.png"
 POWER_UPS_COLLECTIBLE_COMMON_DROP_RATE = 0.5
 
 ## Enemies
-ENEMY_1_PATH = "assets/enemies/aspersor.png"
-ENEMY_2_PATH = "assets/enemies/frisbee.png"
+ASPERSOR_SPRITE_PATH = "assets/enemies/aspersor.png"
+AGUA_SPRITE_PATH = "assets/projectile/agua.png"
+AGUA_SCALING = 0.125
 
+FRISBEE_SPRITE_PATH = "assets/enemies/frisbee.png"
+
+ASPERSOR_PROJECTILE_SPEED = 5
+ASPERSOR_SPAWN_SHOOT_DELAY = 2
 # Scaling and positioning
 CHARACTER_SCALING = 1
+ASPERSOR_SCALING = 0.125
+FRISBEE_SCALING = 1
 TILE_SCALING = 1
 COLLECTIBLE_SCALING = 0.125
 
@@ -132,31 +139,25 @@ OBJECT_NAME_PLAYER_SPAWN = "player"
 OBJECT_NAME_ENEMY_SPAWN = "enemy"
 OBJECT_NAME_PROJECTILE = "projectile"
 
-
 # IDs
 P1_ID = "player1"
 P2_ID = "player2"
 
-
-OBJECT_PROJECTILE_FRISBEE_ATTR = "frisbee_id"
-OBJECT_ENEMY_ASPERSOR_ATTR = "enemy_id"
-
 FRISBEE_1_ID = "frisbee1"
 FRISBEE_2_ID = "frisbee2"
 
-ASPERSOR_1_ID = "enemy1"
-ASPERSOR_2_ID = "enemy2"
-ASPERSOR_3_ID = "enemy3"
-ASPERSOR_4_ID = "enemy4"
+ASPERSOR_1_ID = "aspersor1"
+ASPERSOR_2_ID = "aspersor2"
+ASPERSOR_3_ID = "aspersor3"
+ASPERSOR_4_ID = "aspersor4"
 
+OBJECT_PROJECTILE_ATTR = "frisbee_id"
+OBJECT_ENEMY_ATTR = "enemy_id"
 
 ASPERSOR_1_PROJECTILE_ID = "agua1"
 ASPERSOR_2_PROJECTILE_ID = "agua2"
 ASPERSOR_3_PROJECTILE_ID = "agua3"
 ASPERSOR_4_PROJECTILE_ID = "agua4"
-
-
-
 
 # Animations
 RIGHT_FACING = 1

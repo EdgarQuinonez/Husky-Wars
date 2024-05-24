@@ -267,7 +267,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -288,10 +288,10 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
-                 "x":719,
-                 "y":271
+                 "x":718.333333333333,
+                 "y":306.333333333333
                 }, 
                 {
                  "height":0,
@@ -305,10 +305,10 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
-                 "x":177,
-                 "y":246
+                 "x":177.666666666667,
+                 "y":270
                 }, 
                 {
                  "height":0,
@@ -322,10 +322,10 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
-                 "x":479,
-                 "y":437
+                 "x":479.666666666667,
+                 "y":465.666666666667
                 }, 
                 {
                  "height":0,
@@ -335,14 +335,14 @@
                         {
                          "name":"enemy_id",
                          "type":"string",
-                         "value":"aspersor 4"
+                         "value":"aspersor4"
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
-                 "x":1121,
-                 "y":341
+                 "x":1120.33333333333,
+                 "y":370.333333333333
                 }, 
                 {
                  "height":0,
@@ -356,7 +356,7 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
                  "x":12,
                  "y":111
@@ -373,7 +373,7 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
                  "x":14,
                  "y":499
@@ -402,7 +402,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }],

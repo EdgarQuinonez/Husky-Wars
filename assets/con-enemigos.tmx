@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="40" height="22" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="68">
+ <editorsettings>
+  <export target="con-enemigos.tmj" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" source="morning_adventures_tileset_32.tsx"/>
  <layer id="3" name="background" width="40" height="22">
   <data encoding="csv">
@@ -93,7 +96,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="6" name="collectible">
+ <objectgroup id="6" name="collectible" visible="0">
   <object id="6" x="175.333" y="209.333"/>
   <object id="11" x="848" y="80"/>
   <object id="13" x="1070.67" y="109.333"/>
@@ -106,38 +109,38 @@
   <object id="23" x="464.5" y="47"/>
  </objectgroup>
  <objectgroup id="8" name="enemy">
-  <object id="60" name="aspersor3" x="719" y="271" visible="0">
+  <object id="60" name="aspersor3" x="718.333" y="306.333">
    <properties>
     <property name="enemy_id" value="aspersor3"/>
    </properties>
   </object>
-  <object id="62" name="aspersor1" x="177" y="246" visible="0">
+  <object id="62" name="aspersor1" x="177.667" y="270">
    <properties>
     <property name="enemy_id" value="aspersor1"/>
    </properties>
   </object>
-  <object id="64" name="aspersor2" x="479" y="437" visible="0">
+  <object id="64" name="aspersor2" x="479.667" y="465.667">
    <properties>
     <property name="enemy_id" value="aspersor2"/>
    </properties>
   </object>
-  <object id="65" name="aspersor4" x="1121" y="341" visible="0">
+  <object id="65" name="aspersor4" x="1120.33" y="370.333">
    <properties>
-    <property name="enemy_id" value="aspersor 4"/>
+    <property name="enemy_id" value="aspersor4"/>
    </properties>
   </object>
-  <object id="66" name="frisbee1" x="12" y="111" visible="0">
+  <object id="66" name="frisbee1" x="12" y="111">
    <properties>
     <property name="enemy_id" value="frisbee1"/>
    </properties>
   </object>
-  <object id="67" name="frisbee2" x="14" y="499" visible="0">
+  <object id="67" name="frisbee2" x="14" y="499">
    <properties>
     <property name="enemy_id" value="frisbee2"/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="7" name="power up">
+ <objectgroup id="7" name="power up" visible="0">
   <object id="59" name="powerup" x="720" y="223"/>
  </objectgroup>
 </map>
