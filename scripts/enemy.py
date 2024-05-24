@@ -1,7 +1,7 @@
 import arcade
 import math
 
-from setup import AGUA_SCALING, AGUA_SPRITE_PATH, ASPERSOR_SPAWN_SHOOT_DELAY, OBJECT_NAME_ENEMY_SPAWN
+from setup import AGUA_SCALING, AGUA_SPRITE_PATH, ASPERSOR_SPAWN_SHOOT_DELAY, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PROJECTILE
 
 class Enemy(arcade.Sprite):
     def __init__(self, image_path, scaling, spawn_point):
@@ -53,34 +53,39 @@ class Aspersor(Enemy):
         self.projectile_speed = projectile_speed
         self.existing_projectile = None
                 
-                
 
-    def fire_projectile(self):        
-
-        # check if there is already a projectile on screen
-        for sprite in self.projectiles:
-            if sprite:
-                self.existing_projectile = sprite
-                break
-                    
-                
-        if self.is_active and self.time_since_spawn >= ASPERSOR_SPAWN_SHOOT_DELAY and self.existing_projectile is None:
-            # Shoot two projectiles, one in each diagonal direction
-            for angle in [-45, 45]:  # 45 degrees in each direction
+    def fire_projectile(self, scene):
+        # Check if there are no existing projectiles and conditions are met
+        if self.is_active and self.time_since_spawn >= ASPERSOR_SPAWN_SHOOT_DELAY and not self.projectiles:
+            for angle in [-45, 45]:
+                # Create a new projectile
                 projectile = arcade.Sprite(AGUA_SPRITE_PATH, AGUA_SCALING)
                 projectile.center_x = self.center_x
                 projectile.center_y = self.center_y
 
-                # Calculate diagonal velocity based on angle
+                # Set its initial change_x and change_y
                 radians = math.radians(angle)
                 projectile.change_x = math.cos(radians) * self.projectile_speed
                 projectile.change_y = math.sin(radians) * self.projectile_speed
+
                 self.projectiles.append(projectile)
+                scene.add_sprite(OBJECT_NAME_PROJECTILE, projectile)
+        else:  
+            # Move existing projectiles
+            for sprite in self.projectiles:
+                sprite.center_x += sprite.change_x
+                sprite.center_y += sprite.change_y
+
+                # # Remove if off-screen
+                # if sprite.top < 0 or sprite.bottom > scene.get_size()[1] or \
+                # sprite.left < 0 or sprite.right > scene.get_size()[0]:
+                #     self.projectiles.remove(sprite)
+                #     sprite.remove_from_sprite_lists()
 
     def update(self, delta_time, scene):
         super().update(delta_time, scene)
         
-        self.fire_projectile()
+        self.fire_projectile(scene)
 
         # More extensive off-screen check
         if self.existing_projectile: # If there are projectiles

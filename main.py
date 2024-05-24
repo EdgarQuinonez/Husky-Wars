@@ -180,7 +180,7 @@ class MyGame(arcade.Window):
         Returns:
             int: The respawn cooldown in seconds.
         """
-        return random.randint(4, 9)  # Inclusive range from 4 to 9
+        return random.randint(8, 13)
     
     
     def get_enemy_spawn_point(self, enemy_id):        
