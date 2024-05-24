@@ -10,10 +10,7 @@ class Collectible(arcade.Sprite):
         self.center_y = None
         self.collect_coin_sound = None
         
-    def setup(self, collect_coin_sound, initial_position):
-        x, y = initial_position
-        self.center_x = x
-        self.center_y = 96
+    def setup(self, collect_coin_sound):
         self.collect_coin_sound = collect_coin_sound    
 
     def collect(self, player):

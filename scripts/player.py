@@ -1,7 +1,7 @@
 import arcade
 import arcade.key
 import arcade.key
-from setup import CHARACTER_SCALING, GRAVITY, LEFT_FACING, RIGHT_FACING
+from setup import CHARACTER_SCALING, GRAVITY, LEFT_FACING, RIGHT_FACING, P1_START_X, P1_START_Y
 
 def load_texture_pair(filename):
     """
@@ -13,20 +13,17 @@ def load_texture_pair(filename):
     ]
 
 class Player(arcade.Sprite):
-    def __init__(self, name, score, initial_position, image_path, speed, jump_speed, keybindings):
-        [x, y] = initial_position        
+    def __init__(self, image_path):      
         super().__init__(filename=image_path, scale=CHARACTER_SCALING)        
-        self.center_x = x
-        self.center_y = y
-        self.name = name
-        self.score = score
-        self.jump_speed = jump_speed
-        self.speed = speed
-        self.keybindings = keybindings
-        self.score_text = "Score: 0"
-        
+             
         self.character_face_direction = None
         self.physics_engine: arcade.PhysicsEnginePlatformer = None
+        self.name = None
+        self.keybindings = None
+        self.score = 0
+        self.score_text = "Score: 0"
+        self.jump_speed = None
+        self.speed = None        
         self.jump_sound = None
         self.pressed_keys = set()
         self.score_x = None
@@ -53,14 +50,18 @@ class Player(arcade.Sprite):
 
                 
     
-    def setup(self, walls, jump_sound, score_position, face_direction, animations_path):
-        x,y = score_position
+    def setup(self, walls, jump_sound, score_position, face_direction, animations_path, score, name, jump_speed, speed, keybindings, spawn_position):        
         self.physics_engine = arcade.PhysicsEnginePlatformer(self, walls, GRAVITY)
         self.jump_sound = jump_sound
-        self.score_x = x
-        self.score_y = y
+        self.score_x, self.score_y = score_position        
         self.character_face_direction = face_direction
         self.animations_main_path = animations_path
+        self.score = score
+        self.name = name
+        self.jump_speed = jump_speed
+        self.speed = speed
+        self.keybindings = keybindings
+        self.center_x, self.center_y = spawn_position
         
         self.idle_texture_pair = load_texture_pair(f"{self.animations_main_path}/idle.png")        
         

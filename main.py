@@ -1,5 +1,5 @@
 import arcade, random, math
-from setup import BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_PROJECTILE, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH
+from setup import BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_PROJECTILE, P1_ID, P2_ID, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH
 from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
 from scripts.countdown import Countdown
@@ -59,46 +59,54 @@ class MyGame(arcade.Window):
 
         
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
-        # self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING)
         self.collectible_layer = self.tile_map.object_lists[OBJECT_NAME_COLLECTIBLES]         
+        self.player_spawn_objs = self.tile_map.object_lists[OBJECT_NAME_PLAYER_SPAWN]
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
         
-        self.p1_sprite = Player("player1", 0, (P1_START_X, P1_START_Y), P1_STILL_PATH, P1_SPEED, P1_JUMP_SPEED, P1_KEYBINDINGS)
-        self.p2_sprite = Player("player2", 0, (P2_START_X, P2_START_Y), P2_STILL_PATH, P2_SPEED, P2_JUMP_SPEED, P2_KEYBINDINGS)
+        platforms_layer = self.scene[LAYER_NAME_PLATFORMS]
+        p1_spawn = self.get_player_spawn_point(P1_ID)
+        p2_spawn = self.get_player_spawn_point(P2_ID)
+                
+        self.p1_sprite = Player(P1_STILL_PATH)
+        self.p2_sprite = Player(P2_STILL_PATH)
+        
+        self.p1_sprite.setup(platforms_layer, self.jump_sound, (P1_SCORE_X, P1_SCORE_Y), RIGHT_FACING, P1_ANIMATIONS_PATH, 0, "Player 1", P1_JUMP_SPEED, P1_SPEED, P1_KEYBINDINGS, p1_spawn)        
+        self.p2_sprite.setup(platforms_layer, self.jump_sound, (P2_SCORE_X, P2_SCORE_Y), LEFT_FACING, P2_ANIMATIONS_PATH, 0, "Player 2", P2_JUMP_SPEED, P2_SPEED, P2_KEYBINDINGS, p2_spawn)        
         
         self.scene.add_sprite(OBJECT_NAME_PLAYER_SPAWN, self.p1_sprite)                        
         self.scene.add_sprite(OBJECT_NAME_PLAYER_SPAWN, self.p2_sprite)
-        
-        
+                
         # Generate random collectibles function call
         self.collectible_list = arcade.SpriteList()
-        self.generate_collectibles()
-         # Set the background color
-        if self.tile_map.background_color:
-            arcade.set_background_color(self.tile_map.background_color)
-
-                    
-        self.p1_sprite.setup(self.scene[LAYER_NAME_PLATFORMS], self.jump_sound, (P1_SCORE_X, P1_SCORE_Y), RIGHT_FACING, P1_ANIMATIONS_PATH)        
-        self.p2_sprite.setup(self.scene[LAYER_NAME_PLATFORMS], self.jump_sound, (P2_SCORE_X, P2_SCORE_Y), LEFT_FACING, P2_ANIMATIONS_PATH)
+        self.generate_collectibles()                          
         
         self.countdown = Countdown()
         self.countdown.start()
         self.countdown_text = f"{self.countdown.remaining_time}"
-                
     
+    def get_player_spawn_point(self, player_id):                
+        for spawn in self.player_spawn_objs:
+            if spawn.properties["player_id"] == player_id:
+                cartesian = self.tile_map.get_cartesian(spawn.shape[0], spawn.shape[1])
+                center_x = math.floor(
+                        cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+                    )
+                center_y = math.floor(
+                    (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+                )
+                
+                return (center_x, center_y)                
+                    
     def generate_collectibles(self):
         # Define possible collectible types
-        collectible_types = ["Coin", "Trap"]                        
+        collectible_types = ["Coin", "Trap"]                       
         # Iterate over spawn points and create collectibles
         for collectible_object in self.collectible_layer:
             cartesian = self.tile_map.get_cartesian(
                 collectible_object.shape[0], collectible_object.shape[1]
-            )
-            print(collectible_object)
-            collectible = None
-            
-            
+            )            
+            collectible = None                        
             # Check for existing collectibles at this position
             existing_collectible = None
     
@@ -126,9 +134,6 @@ class MyGame(arcade.Window):
                     elif random.random() <= GOOD_COLLECTIBLE_COMMON_DROP_RATE:
                         collectible = Coin(GOOD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_POINTS)
                     
-                    # if collectible is not None:
-                    #     collectible.setup(self.collect_coin_sound, (x, y))
-                    
                         
                 elif collectible_type == "Trap":
                 
@@ -138,10 +143,7 @@ class MyGame(arcade.Window):
                         collectible = Coin(BAD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_UNCOMMON_POINTS)
                     elif random.random() <= BAD_COLLECTIBLE_COMMON_DROP_RATE:
                         collectible = Coin(BAD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_COMMON_POINTS)
-                        
-                    # if collectible is not None:
-                    #     collectible.setup(self.collect_coin_sound, (x, y))
-                                
+                                                                   
                 # Only add to the lists if a collectible was created
                 if collectible is not None:  
                     collectible.center_x = math.floor(
@@ -150,16 +152,15 @@ class MyGame(arcade.Window):
                     collectible.center_y = math.floor(
                         (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
                     )
+                    collectible.setup(self.collect_coin_sound)
                     self.collectible_list.append(collectible)
-                    self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible)                        
-        
-    def match_duration_countdown(self):
-        pass        
-    
+                    self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible) # Creating new layer with collectibles and adding each sprite.
+                                                                                                   
     def on_draw(self):
         """Render the screen."""        
         self.clear()        
-        self.scene.draw()
+            
+        self.scene.draw()        
         self.p1_sprite.draw_gui()
         self.p2_sprite.draw_gui()
         arcade.draw_text(
@@ -185,8 +186,7 @@ class MyGame(arcade.Window):
         self.p2_sprite.update()
         
         # Check collectible spawn cooldown to regenerate collectibles
-        if self.countdown.remaining_time % 5 == 0:
-            # print("Regenerating collectibles")
+        if self.countdown.remaining_time % 5 == 0:            
             self.generate_collectibles()
         
                 

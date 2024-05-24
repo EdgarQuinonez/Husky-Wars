@@ -54,7 +54,7 @@ ENEMY_2_PATH = "assets/enemies/frisbee.png"
 
 # Scaling and positioning
 CHARACTER_SCALING = 1
-TILE_SCALING = 0.5
+TILE_SCALING = 1
 COLLECTIBLE_SCALING = 0.125
 
 TILE_SIZE = 32
@@ -66,11 +66,13 @@ GRAVITY = 1
 TILE_WIDTH = 40
 TILE_HEIGHT = 22
 
-TILE_MAP_PATH = "assets/con-enemigos.json"
+TILE_MAP_PATH = "assets/con-enemigos.tmj"
 
 SCREEN_WIDTH = TILE_SIZE * TILE_WIDTH
 SCREEN_HEIGHT = TILE_SIZE * TILE_HEIGHT
 SCREEN_TITLE = "Husky Wars!"
+
+
 
 ## Scores display
 P1_SCORE_X = 10
@@ -130,10 +132,11 @@ OBJECT_NAME_PLAYER_SPAWN = "player"
 OBJECT_NAME_ENEMY_SPAWN = "enemy"
 OBJECT_NAME_PROJECTILE = "projectile"
 
-## Custom attributes
-OBJECT_PLAYER_ID_ATTR = "player_id"
-P1_SPAWN_ID = "player1"
-P2_SPAWN_ID = "player2"
+
+# IDs
+P1_ID = "player1"
+P2_ID = "player2"
+
 
 OBJECT_PROJECTILE_FRISBEE_ATTR = "frisbee_id"
 OBJECT_ENEMY_ASPERSOR_ATTR = "enemy_id"
