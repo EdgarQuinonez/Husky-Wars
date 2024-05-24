@@ -100,7 +100,7 @@ class MyGame(arcade.Window):
         # Set up aspersores        
         for aspersor_id in self.aspersores_ids:            
             self.aspersores_objs[aspersor_id] = Aspersor(ASPERSOR_SPRITE_PATH, ASPERSOR_SCALING, self.get_enemy_spawn_point(aspersor_id),  ASPERSOR_PROJECTILE_SPEED)                                    
-            self.aspersores_objs[aspersor_id].setup(self.get_enemy_cooldown())                        
+            self.aspersores_objs[aspersor_id].setup()                        
     
     def get_player_spawn_point(self, player_id):                
         for spawn in self.player_spawn_objs:
@@ -172,17 +172,7 @@ class MyGame(arcade.Window):
                     collectible.setup(self.collect_coin_sound)
                     self.collectible_list.append(collectible)
                     self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible) # Creating new layer with collectibles and adding each sprite.
-    
-    def get_enemy_cooldown(self):
-        """
-        Generates a random respawn cooldown within the 4-9 second range.
-        
-        Returns:
-            int: The respawn cooldown in seconds.
-        """
-        return random.randint(8, 13)
-    
-    
+                    
     def get_enemy_spawn_point(self, enemy_id):        
         for spawn in self.enemy_spawn_objs:            
             if spawn.properties["enemy_id"] == enemy_id:

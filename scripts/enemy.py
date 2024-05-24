@@ -1,5 +1,6 @@
 import arcade
 import math
+import random
 
 from setup import AGUA_SCALING, AGUA_SPRITE_PATH, ASPERSOR_SPAWN_SHOOT_DELAY, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PROJECTILE
 
@@ -13,13 +14,18 @@ class Enemy(arcade.Sprite):
         self.is_active = False  # Tracks whether the enemy is currently present
         
         self.done = False # Tracks whether the enemy has been completed his movement
+        # self.has_shot = False
         self.respawn_time = 0
         
 
-    def setup(self, cooldown):
+    def setup(self):
         # Lo obtienes de los cooldown calculados aleatoriamente cada vez que se destruye el último        
-        self.respawn_time = cooldown        
+        self.respawn_time = self.get_cooldown() 
 
+    def get_cooldown(self):
+        return random.randint(8, 13)
+        
+    
     def spawn(self, scene):        
         if not self.is_active and self.respawn_time == 0:
             self.is_active = True
@@ -37,27 +43,40 @@ class Enemy(arcade.Sprite):
             if self.respawn_time > 0:
                 self.respawn_time -= delta_time            
             elif self.respawn_time <= 0:
-                self.respawn_time = 0
-                
+                self.respawn_time = 0            
             self.spawn(scene)
                                 
-        if self.is_active and self.done:
+        if self.is_active and self.done:            
             self.is_active = False
             self.done = False
+            self.has_shot = False        
             self.kill()  # Remove from sprite lists
+            self.setup()  # Reset cooldowns
 
 class Aspersor(Enemy):
     def __init__(self, image_path, scaling, spawn_point, projectile_speed):
         super().__init__(image_path, scaling, spawn_point)
         self.projectiles = arcade.SpriteList()        
         self.projectile_speed = projectile_speed
-        self.existing_projectile = None
+        self.existing_projectile = False
+        self.has_shot = False
                 
 
     def fire_projectile(self, scene):
-        # Check if there are no existing projectiles and conditions are met
-        if self.is_active and self.time_since_spawn >= ASPERSOR_SPAWN_SHOOT_DELAY and not self.projectiles:
-            for angle in [-45, 45]:
+        
+        if not any(self.projectiles):  # Empty sprite lists evaluate to False
+            self.existing_projectile = False            
+             # Has shot and projectiles have been destroyed
+            if self.is_active and self.time_since_spawn >= ASPERSOR_SPAWN_SHOOT_DELAY and self.has_shot:  # Ensure enemy is still active
+                self.done = True
+                
+        elif any(self.projectiles):
+            self.existing_projectile = True
+        
+        # Hasn't shot yet
+        if self.is_active and self.time_since_spawn >= ASPERSOR_SPAWN_SHOOT_DELAY and not self.existing_projectile and not self.done:
+            self.has_shot = True
+            for angle in [135, 45]:
                 # Create a new projectile
                 projectile = arcade.Sprite(AGUA_SPRITE_PATH, AGUA_SCALING)
                 projectile.center_x = self.center_x
@@ -70,17 +89,15 @@ class Aspersor(Enemy):
 
                 self.projectiles.append(projectile)
                 scene.add_sprite(OBJECT_NAME_PROJECTILE, projectile)
-        else:  
+        # Has shot and projectiles are still active                
+        elif self.existing_projectile and self.is_active and not self.done:  
             # Move existing projectiles
             for sprite in self.projectiles:
                 sprite.center_x += sprite.change_x
                 sprite.center_y += sprite.change_y
-
-                # # Remove if off-screen
-                # if sprite.top < 0 or sprite.bottom > scene.get_size()[1] or \
-                # sprite.left < 0 or sprite.right > scene.get_size()[0]:
-                #     self.projectiles.remove(sprite)
-                #     sprite.remove_from_sprite_lists()
+                
+                
+        
 
     def update(self, delta_time, scene):
         super().update(delta_time, scene)
@@ -94,8 +111,11 @@ class Aspersor(Enemy):
             for projectile in self.projectiles:
                 if (projectile.bottom < 0 or projectile.top > screen_height or
                     projectile.left > screen_width or projectile.right < 0):
-                    if not self.projectiles:
-                        self.done = True
+                    projectile.kill()                                        
+                    
+    
+                    
+            
 
 class Frisbee(Enemy):
     def __init__(self, image_path, scaling, spawn_point, speed):
