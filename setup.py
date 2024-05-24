@@ -6,6 +6,7 @@ P2_ANIMATIONS_PATH = "assets/character/p2"
 
 # Paths to sound assets
 JUMP_SOUND_PATH = "assets/sounds/jump.wav"
+FALLING_SOUND_PATH = "assets/sounds/fall.wav"
 HURT_SOUND_PATH = "assets/sounds/hurt.wav"
 COLLECTIBLE_SOUND_PATH = "assets/sounds/collectible.wav"
 POWER_UP_SOUND_PATH = "assets/sounds/powerup.wav"
@@ -57,6 +58,7 @@ BAD_COLLECTIBLE_RARE_POINTS = -10
 
 ASPERSOR_SHOT_PENALIZATION_POINTS = -10
 FRISBEE_PENALIZATION_POINTS = -20
+FALLING_PENALIZATION_POINTS = -15
 
 ### Power Ups
 POWER_UPS_COLLECTIBLE_COMMON_PATH = "assets/collectibles/power_ups/correa.png"

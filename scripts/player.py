@@ -1,7 +1,7 @@
 import arcade
 import arcade.key
 import arcade.key
-from setup import ASPERSOR_SHOT_PENALIZATION_POINTS, CHARACTER_SCALING, GRAVITY, HURT_TIMER_DURATION, LEFT_FACING, RIGHT_FACING, P1_START_X, P1_START_Y
+from setup import CHARACTER_SCALING, FALLING_PENALIZATION_POINTS, GRAVITY, HURT_TIMER_DURATION, LEFT_FACING, RIGHT_FACING
 
 def load_texture_pair(filename):
     """
@@ -30,6 +30,8 @@ class Player(arcade.Sprite):
         self.score_y = None
         self.animations_main_path = None
         self.hurt_sound = None
+        self.respawn_timer = 0  
+        self.respawn_delay = 3  # seconds
         
         
         # Animations
@@ -43,7 +45,8 @@ class Player(arcade.Sprite):
         self.is_jumping = False
         self.is_walking = False
         
-        self.idle_texture_pair = None        
+        self.idle_texture_pair = None
+        self.falling_sound_played = False        
                             
         # Load textures for walking
         self.hurt_textures = []
@@ -53,7 +56,7 @@ class Player(arcade.Sprite):
 
                 
     
-    def setup(self, walls, jump_sound, score_position, face_direction, animations_path, score, name, jump_speed, speed, keybindings, spawn_position, hurt_sound):        
+    def setup(self, walls, jump_sound, score_position, face_direction, animations_path, score, name, jump_speed, speed, keybindings, spawn_position, hurt_sound, falling_sound):        
         self.physics_engine = arcade.PhysicsEnginePlatformer(self, walls, GRAVITY)
         self.jump_sound = jump_sound
         self.score_x, self.score_y = score_position        
@@ -64,8 +67,10 @@ class Player(arcade.Sprite):
         self.jump_speed = jump_speed
         self.speed = speed
         self.keybindings = keybindings
+        self.spawn_position = spawn_position
         self.center_x, self.center_y = spawn_position
         self.hurt_sound = hurt_sound
+        self.falling_sound = falling_sound
         self.idle_texture_pair = load_texture_pair(f"{self.animations_main_path}/idle.png")        
         
         # Load hurt textures
@@ -126,6 +131,19 @@ class Player(arcade.Sprite):
         else:
             self.change_x = 0
             
+    def respawn(self):
+        # Reset position to spawn point
+        self.center_x, self.center_y = self.spawn_position
+        
+        # Diminish score (adjust points as needed)
+        self.score += FALLING_PENALIZATION_POINTS
+        self.score_text = f"Score: {self.score}"
+        
+        # Reset the timer and any falling-related state
+        self.falling_sound_played = False
+        self.respawn_timer = 0
+        self.change_y = 0  # Stop any residual falling motion
+            
     def take_damage(self, penalization_points):
         if self.hurt_timer <= 0:  # Check if not already hurt
             arcade.play_sound(self.hurt_sound)  # Play the hurt sound
@@ -167,9 +185,19 @@ class Player(arcade.Sprite):
             elif self.change_x != 0:
                 self.cur_texture = (self.cur_texture + 1) % len(self.walk_textures)
                 self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
-
     
-    def update(self):
+    def player_fell(self, delta_time):
+        if self.center_y < -50 and self.change_y < 0: 
+            if not self.falling_sound_played:
+                arcade.play_sound(self.falling_sound)
+                self.falling_sound_played = True
+            self.respawn_timer += delta_time
+            if self.respawn_timer >= self.respawn_delay:
+                self.respawn()  
+    
+    def update(self, delta_time: float = 1 / 60):
         self.move()
         self.physics_engine.update()
-        self.update_animation()      
+        self.update_animation()
+        self.player_fell(delta_time)
+             
