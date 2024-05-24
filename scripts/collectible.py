@@ -31,6 +31,10 @@ class Trap(Collectible):
     def __init__(self, filename, scale, points, effect=None):
         super().__init__(filename, scale, points)
         self.effect = effect
+        
+    def collect(self, player):
+        super().collect(player)
+        player.take_damage(self.points)
 
 class Powerup(Collectible):
     def __init__(self, filename, scale, points, effect=None, duration=10):

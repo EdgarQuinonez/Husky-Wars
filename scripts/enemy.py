@@ -2,7 +2,7 @@ import arcade
 import math
 import random
 
-from setup import AGUA_SCALING, AGUA_SPRITE_PATH, ASPERSOR_SPAWN_SHOOT_DELAY, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PROJECTILE
+from setup import AGUA_SCALING, AGUA_SPRITE_PATH, ASPERSOR_SHOT_PENALIZATION_POINTS, ASPERSOR_SPAWN_SHOOT_DELAY, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_PROJECTILE
 
 class Enemy(arcade.Sprite):
     def __init__(self, image_path, scaling, spawn_point):
@@ -14,27 +14,31 @@ class Enemy(arcade.Sprite):
         self.is_active = False  # Tracks whether the enemy is currently present
         
         self.done = False # Tracks whether the enemy has been completed his movement
-        # self.has_shot = False
+        
+        self.scene = None  # Reference to the scene object
+        self.water_sound = None  # Reference to the water sound object
         self.respawn_time = 0
         
 
-    def setup(self):
+    def setup(self, scene, water_sound):
         # Lo obtienes de los cooldown calculados aleatoriamente cada vez que se destruye el último        
+        self.scene = scene
+        self.water_sound = water_sound
         self.respawn_time = self.get_cooldown() 
 
     def get_cooldown(self):
         return random.randint(8, 13)
         
     
-    def spawn(self, scene):        
+    def spawn(self):        
         if not self.is_active and self.respawn_time == 0:
             self.is_active = True
             self.time_since_spawn = 0
             self.collidable = False  # Disable hitbox            
             
-            scene.add_sprite(OBJECT_NAME_ENEMY_SPAWN, self)  # Add to sprite lists
+            self.scene.add_sprite(OBJECT_NAME_ENEMY_SPAWN, self)  # Add to sprite lists
 
-    def update(self, delta_time, scene):
+    def update(self, delta_time):
         
         if self.is_active:
             self.time_since_spawn += delta_time                    
@@ -44,14 +48,14 @@ class Enemy(arcade.Sprite):
                 self.respawn_time -= delta_time            
             elif self.respawn_time <= 0:
                 self.respawn_time = 0            
-            self.spawn(scene)
+            self.spawn()
                                 
         if self.is_active and self.done:            
             self.is_active = False
             self.done = False
             self.has_shot = False        
             self.kill()  # Remove from sprite lists
-            self.setup()  # Reset cooldowns
+            self.respawn_time = self.get_cooldown()  # Set the respawn time to a random value
 
 class Aspersor(Enemy):
     def __init__(self, image_path, scaling, spawn_point, projectile_speed):
@@ -62,8 +66,7 @@ class Aspersor(Enemy):
         self.has_shot = False
                 
 
-    def fire_projectile(self, scene):
-        
+    def fire_projectile(self):        
         if not any(self.projectiles):  # Empty sprite lists evaluate to False
             self.existing_projectile = False            
              # Has shot and projectiles have been destroyed
@@ -76,6 +79,7 @@ class Aspersor(Enemy):
         # Hasn't shot yet
         if self.is_active and self.time_since_spawn >= ASPERSOR_SPAWN_SHOOT_DELAY and not self.existing_projectile and not self.done:
             self.has_shot = True
+            arcade.play_sound(self.water_sound)  # Play the water sound
             for angle in [135, 45]:
                 # Create a new projectile
                 projectile = arcade.Sprite(AGUA_SPRITE_PATH, AGUA_SCALING)
@@ -88,7 +92,7 @@ class Aspersor(Enemy):
                 projectile.change_y = math.sin(radians) * self.projectile_speed
 
                 self.projectiles.append(projectile)
-                scene.add_sprite(OBJECT_NAME_PROJECTILE, projectile)
+                self.scene.add_sprite(OBJECT_NAME_PROJECTILE, projectile)
         # Has shot and projectiles are still active                
         elif self.existing_projectile and self.is_active and not self.done:  
             # Move existing projectiles
@@ -97,12 +101,27 @@ class Aspersor(Enemy):
                 sprite.center_y += sprite.change_y
                 
                 
+        # Check for collisions only if projectiles exist and the enemy is active
+        if self.existing_projectile and self.is_active and not self.done:
+            player_list = self.scene.get_sprite_list(OBJECT_NAME_PLAYER_SPAWN)  # Get the player sprite list
+
+            # Check each projectile for collision with any player sprite
+            for projectile in self.projectiles:
+                # Use the sprite list for efficient collision detection
+                hit_list = arcade.check_for_collision_with_list(projectile, player_list)
+                
+                if hit_list:
+                    projectile.remove_from_sprite_lists()  # Remove the projectile                    
+                    for player in hit_list:
+                        player.take_damage(ASPERSOR_SHOT_PENALIZATION_POINTS)  # Example method to handle player damage
+                
+    
         
 
-    def update(self, delta_time, scene):
-        super().update(delta_time, scene)
+    def update(self, delta_time):
+        super().update(delta_time)
         
-        self.fire_projectile(scene)
+        self.fire_projectile()
 
         # More extensive off-screen check
         if self.existing_projectile: # If there are projectiles
@@ -136,6 +155,6 @@ class Frisbee(Enemy):
                 self.change_x *= self.speed  # Scale the change in x direction by the projectile speed
                 self.change_y *= self.speed  # Scale the change in y direction by the projectile speed
 
-    def update(self, delta_time, scene):
-        super().update(delta_time, scene)
+    def update(self, delta_time):
+        super().update(delta_time)
         self.follow_trail()
