@@ -61,9 +61,12 @@ FRISBEE_PENALIZATION_POINTS = -20
 FALLING_PENALIZATION_POINTS = -15
 
 ### Power Ups
-POWER_UPS_COLLECTIBLE_COMMON_PATH = "assets/collectibles/power_ups/correa.png"
+POWER_UP_PATH = "assets/collectibles/power_ups/correa.png"
 
-POWER_UPS_COLLECTIBLE_COMMON_DROP_RATE = 0.5
+POWER_UP_DROP_RATE = 0.5
+POWER_UP_COOLDOWN = 15
+POWER_UP_POINTS = 20
+POWER_UP_TIME_INCREASE = 10
 
 ## Enemies
 ASPERSOR_SPRITE_PATH = "assets/enemies/aspersor.png"
@@ -150,6 +153,7 @@ P2_KEYBINDINGS = {
 # Layers
 LAYER_NAME_PLATFORMS = "platforms"
 OBJECT_NAME_COLLECTIBLES = "collectible"
+OBJECT_NAME_POWER_UP = "power_up"
 LAYER_NAME_BACKGROUND = "background"
 LAYER_NAME_METABACKGROUND = "Capa de patrones 3"
 OBJECT_NAME_PLAYER_SPAWN = "player"

@@ -15,8 +15,6 @@ class Collectible(arcade.Sprite):
 
     def collect(self, player):
         self.collected = True
-        player.score += self.points
-        arcade.play_sound(self.collect_coin_sound)
         
 
     def update(self):
@@ -26,18 +24,34 @@ class Collectible(arcade.Sprite):
 class Coin(Collectible):
     def __init__(self, filename, scale, points):
         super().__init__(filename, scale, points)
+        
+    def collect(self, player):
+        super().collect(player)
+        player.score += self.points
+        arcade.play_sound(self.collect_coin_sound)
 
 class Trap(Collectible):
-    def __init__(self, filename, scale, points, effect=None):
+    def __init__(self, filename, scale, points):
         super().__init__(filename, scale, points)
-        self.effect = effect
+
         
     def collect(self, player):
         super().collect(player)
         player.take_damage(self.points)
 
 class Powerup(Collectible):
-    def __init__(self, filename, scale, points, effect=None, duration=10):
+    def __init__(self, filename, scale, points, time_increase):
         super().__init__(filename, scale, points)
-        self.effect = effect
-        self.duration = duration
+        self.time_increase = time_increase
+        self.power_up_sound = None
+        
+    def setup(self, power_up_sound):
+        self.power_up_sound = power_up_sound
+       
+        
+    def collect(self, player, countdown_ref):
+        super().collect(player)
+        player.score += self.points
+        countdown_ref.remaining_time += self.time_increase
+        arcade.play_sound(self.power_up_sound)
+

@@ -140,7 +140,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="7" name="power up" visible="0">
-  <object id="59" name="powerup" x="720" y="223"/>
+ <objectgroup id="7" name="power_up">
+  <object id="59" name="powerup" x="720" y="243"/>
  </objectgroup>
 </map>

@@ -1,6 +1,6 @@
 import arcade, random, math
 from scripts.enemy import Aspersor
-from setup import ASPERSOR_1_ID, ASPERSOR_2_ID, ASPERSOR_3_ID, ASPERSOR_4_ID, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_SOUND_PATH, FALLING_SOUND_PATH, FRISBEE_1_ID, FRISBEE_2_ID, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_PROJECTILE, P1_ID, P2_ID, PROJECTILE_SOUND_PATH, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
+from setup import ASPERSOR_1_ID, ASPERSOR_2_ID, ASPERSOR_3_ID, ASPERSOR_4_ID, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_SOUND_PATH, FALLING_SOUND_PATH, FRISBEE_1_ID, FRISBEE_2_ID, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_POWER_UP, OBJECT_NAME_PROJECTILE, P1_ID, P2_ID, POWER_UP_COOLDOWN, POWER_UP_DROP_RATE, POWER_UP_PATH, POWER_UP_POINTS, POWER_UP_SOUND_PATH, POWER_UP_TIME_INCREASE, PROJECTILE_SOUND_PATH, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
 from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
 from scripts.countdown import Countdown
@@ -21,8 +21,10 @@ class MyGame(arcade.Window):
         self.p2_sprite = None
         self.countdown = None
         self.countdown_text = None
+        self.time_since_power_up_spawn = 0
         
         self.collectible_sound = arcade.load_sound(COLLECTIBLE_SOUND_PATH)
+        self.power_up_sound = arcade.load_sound(POWER_UP_SOUND_PATH)
         self.jump_sound = arcade.load_sound(JUMP_SOUND_PATH)
         self.falling_sound = arcade.load_sound(FALLING_SOUND_PATH)
         self.water_sound = arcade.load_sound(WATER_SOUND_PATH)
@@ -67,6 +69,7 @@ class MyGame(arcade.Window):
         self.collectible_layer = self.tile_map.object_lists[OBJECT_NAME_COLLECTIBLES]         
         self.player_spawn_objs = self.tile_map.object_lists[OBJECT_NAME_PLAYER_SPAWN]
         self.enemy_spawn_objs = self.tile_map.object_lists[OBJECT_NAME_ENEMY_SPAWN]
+        self.power_up_spawn_objs = self.tile_map.object_lists[OBJECT_NAME_POWER_UP]
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
         
@@ -85,6 +88,10 @@ class MyGame(arcade.Window):
                 
         # Generate random collectibles function call
         self.collectible_list = arcade.SpriteList()
+        self.power_up_list = arcade.SpriteList()
+        
+        self.scene.add_sprite_list(OBJECT_NAME_COLLECTIBLES, self.collectible_list)
+        self.scene.add_sprite_list(OBJECT_NAME_POWER_UP, self.power_up_list)
         self.generate_collectibles()                          
         
         self.countdown = Countdown()
@@ -95,9 +102,8 @@ class MyGame(arcade.Window):
         self.aspersores_ids = [ASPERSOR_1_ID, ASPERSOR_2_ID, ASPERSOR_3_ID, ASPERSOR_4_ID]
         self.frisbee_ids = [FRISBEE_1_ID, FRISBEE_2_ID]
         
-        # Create enemies instances
-        self.enemies = arcade.SpriteList()
-        self.projectiles = arcade.SpriteList()
+        # # Create enemies instances
+        # self.enemies = arcade.SpriteList()
         
         self.aspersores_objs = {}
         
@@ -119,7 +125,7 @@ class MyGame(arcade.Window):
                 
                 return (center_x, center_y)                
                     
-    def generate_collectibles(self):
+    def generate_collectibles(self, delta_time: float = 1/160):
         # Define possible collectible types
         collectible_types = ["Coin", "Trap"]                       
         # Iterate over spawn points and create collectibles
@@ -185,7 +191,43 @@ class MyGame(arcade.Window):
     
                     self.collectible_list.append(collectible)
                     self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible) # Creating new layer with collectibles and adding each sprite.
-                    
+        
+        for power_up_object in self.power_up_spawn_objs:
+            cartesian = self.tile_map.get_cartesian(
+                power_up_object.shape[0], power_up_object.shape[1]
+            )
+            power_up = None                        
+            # Check for existing power_ups at this position
+            existing_power_up = None    
+
+            # If no existing power_up found, spawn a new one
+            for sprite in self.power_up_list:
+                if sprite.center_x == math.floor(
+                    cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+                ) and sprite.center_y == math.floor(
+                    (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+                ):
+                    existing_power_up = sprite
+                    break
+                
+            if existing_power_up is not None:
+                print("Power up already exists")
+                self.time_since_power_up_spawn += delta_time                
+            elif existing_power_up is None:
+                if random.random() <= POWER_UP_DROP_RATE and self.time_since_power_up_spawn >= POWER_UP_COOLDOWN:
+                    self.time_since_power_up_spawn = 0
+                    power_up = Powerup(POWER_UP_PATH, COLLECTIBLE_SCALING, POWER_UP_POINTS, POWER_UP_TIME_INCREASE)
+                    power_up.center_x = math.floor(
+                        cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+                    )
+                    power_up.center_y = math.floor(
+                        (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+                    )
+                    power_up.setup(self.power_up_sound)
+                    self.power_up_list.append(power_up)
+                    self.scene.add_sprite(OBJECT_NAME_POWER_UP, power_up)
+            
+                        
     def get_enemy_spawn_point(self, enemy_id):        
         for spawn in self.enemy_spawn_objs:            
             if spawn.properties["enemy_id"] == enemy_id:
@@ -243,6 +285,9 @@ class MyGame(arcade.Window):
         # Separate collision checks
         player1_coin_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene[OBJECT_NAME_COLLECTIBLES])
         player2_coin_hit_list = arcade.check_for_collision_with_list(self.p2_sprite, self.scene[OBJECT_NAME_COLLECTIBLES])
+        
+        p1_power_up_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene[OBJECT_NAME_POWER_UP])
+        p2_power_up_hit_list = arcade.check_for_collision_with_list(self.p2_sprite, self.scene[OBJECT_NAME_POWER_UP])
 
         for coin in player1_coin_hit_list:
             coin.collect(self.p1_sprite)  # Update only Player 1's score
@@ -251,6 +296,14 @@ class MyGame(arcade.Window):
         for coin in player2_coin_hit_list:
             coin.collect(self.p2_sprite)  # Update only Player 2's score
             coin.update()
+            
+        for power_up in p1_power_up_hit_list:
+            power_up.collect(self.p1_sprite, self.countdown)
+            power_up.update()
+            
+        for power_up in p2_power_up_hit_list:
+            power_up.collect(self.p2_sprite, self.countdown)
+            power_up.update()
         
         self.spawn_enemies(delta_time)
         

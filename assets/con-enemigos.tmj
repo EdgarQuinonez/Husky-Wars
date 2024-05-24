@@ -290,8 +290,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":718.333333333333,
-                 "y":306.333333333333
+                 "x":718.333,
+                 "y":306.333
                 }, 
                 {
                  "height":0,
@@ -307,7 +307,7 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":177.666666666667,
+                 "x":177.667,
                  "y":270
                 }, 
                 {
@@ -324,8 +324,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":479.666666666667,
-                 "y":465.666666666667
+                 "x":479.667,
+                 "y":465.667
                 }, 
                 {
                  "height":0,
@@ -341,8 +341,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1120.33333333333,
-                 "y":370.333333333333
+                 "x":1120.33,
+                 "y":370.333
                 }, 
                 {
                  "height":0,
@@ -387,7 +387,7 @@
         {
          "draworder":"topdown",
          "id":7,
-         "name":"power up",
+         "name":"power_up",
          "objects":[
                 {
                  "height":0,
@@ -398,11 +398,11 @@
                  "visible":true,
                  "width":0,
                  "x":720,
-                 "y":223
+                 "y":243
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }],
