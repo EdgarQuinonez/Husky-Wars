@@ -1,5 +1,4 @@
 import threading
-import arcade
 import time
 import math
 
@@ -21,7 +20,10 @@ class Countdown:
             self.timer_thread.join()
             
     def increase_time(self, time_increase):
-        self.time_added += time_increase 
+        self.time_added += time_increase
+    
+    def get_complete_match_duration(self):
+        return self.match_duration_in_seconds + self.time_added
             
     def _countdown(self):
         while self.remaining_time > 0:

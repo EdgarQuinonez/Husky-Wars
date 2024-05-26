@@ -152,6 +152,213 @@
         }, 
         {
          "draworder":"topdown",
+         "id":10,
+         "name":"trails",
+         "objects":[
+                {
+                 "height":0,
+                 "id":68,
+                 "name":"Frisbee 1 Path",
+                 "polyline":[
+                        {
+                         "x":-4,
+                         "y":-113.333333333333
+                        }, 
+                        {
+                         "x":50,
+                         "y":-14.6666666666667
+                        }, 
+                        {
+                         "x":334.5,
+                         "y":-205
+                        }, 
+                        {
+                         "x":751.333333333333,
+                         "y":-202.666666666667
+                        }, 
+                        {
+                         "x":751.333333333333,
+                         "y":-13.3333333333334
+                        }, 
+                        {
+                         "x":846,
+                         "y":-13.3333333333334
+                        }, 
+                        {
+                         "x":916.666666666667,
+                         "y":-120
+                        }, 
+                        {
+                         "x":1164.66666666667,
+                         "y":-9.33333333333337
+                        }, 
+                        {
+                         "x":1216.66666666667,
+                         "y":-10.6666666666667
+                        }],
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"frisbee1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":18,
+                 "y":620
+                }, 
+                {
+                 "height":0,
+                 "id":70,
+                 "name":"Frisbee 2 Path",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":301.333333333333,
+                         "y":161.333333333333
+                        }, 
+                        {
+                         "x":918.666666666667,
+                         "y":69.3333333333333
+                        }, 
+                        {
+                         "x":1265.33333333333,
+                         "y":-112
+                        }],
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"frisbee2"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":13.3333333333333,
+                 "y":113.333333333333
+                }, 
+                {
+                 "height":0,
+                 "id":72,
+                 "name":"Frisbee 3 Path",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":-385.333333333333,
+                         "y":2
+                        }, 
+                        {
+                         "x":-599.333333333333,
+                         "y":-68
+                        }, 
+                        {
+                         "x":-599.333333333333,
+                         "y":-232
+                        }, 
+                        {
+                         "x":-852,
+                         "y":-222
+                        }, 
+                        {
+                         "x":-1098,
+                         "y":-60.6666666666667
+                        }, 
+                        {
+                         "x":-1259.33333333333,
+                         "y":-158.666666666667
+                        }],
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"frisbee3"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1272,
+                 "y":272
+                }, 
+                {
+                 "height":0,
+                 "id":75,
+                 "name":"Frisbee 4 Path",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":-78.6667,
+                         "y":169.333
+                        }, 
+                        {
+                         "x":-625.333,
+                         "y":-22.6667
+                        }, 
+                        {
+                         "x":-913.333,
+                         "y":-25.3333
+                        }, 
+                        {
+                         "x":-910.667,
+                         "y":-226.667
+                        }, 
+                        {
+                         "x":-844,
+                         "y":-100
+                        }, 
+                        {
+                         "x":-745.333,
+                         "y":-226.667
+                        }, 
+                        {
+                         "x":-657.333,
+                         "y":-165.333
+                        }, 
+                        {
+                         "x":-438.667,
+                         "y":-290.667
+                        }, 
+                        {
+                         "x":-940,
+                         "y":-433.333
+                        }, 
+                        {
+                         "x":-1250.67,
+                         "y":-328
+                        }],
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"frisbee4"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1265.33333333333,
+                 "y":438.666666666667
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":6,
          "name":"collectible",
          "objects":[
@@ -267,7 +474,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -288,7 +495,7 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":0,
                  "x":718.333,
                  "y":306.333
@@ -305,7 +512,7 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":0,
                  "x":177.667,
                  "y":270
@@ -322,7 +529,7 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":0,
                  "x":479.667,
                  "y":465.667
@@ -339,7 +546,7 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":0,
                  "x":1120.33,
                  "y":370.333
@@ -353,6 +560,11 @@
                          "name":"enemy_id",
                          "type":"string",
                          "value":"frisbee1"
+                        }, 
+                        {
+                         "name":"path",
+                         "type":"object",
+                         "value":68
                         }],
                  "rotation":0,
                  "type":"",
@@ -370,6 +582,11 @@
                          "name":"enemy_id",
                          "type":"string",
                          "value":"frisbee2"
+                        }, 
+                        {
+                         "name":"path",
+                         "type":"object",
+                         "value":70
                         }],
                  "rotation":0,
                  "type":"",
@@ -377,6 +594,50 @@
                  "width":0,
                  "x":14,
                  "y":499
+                }, 
+                {
+                 "height":0,
+                 "id":71,
+                 "name":"frisbee3",
+                 "properties":[
+                        {
+                         "name":"enemy_id",
+                         "type":"string",
+                         "value":"frisbee3"
+                        }, 
+                        {
+                         "name":"path",
+                         "type":"object",
+                         "value":72
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1269.33333333333,
+                 "y":271.333333333333
+                }, 
+                {
+                 "height":0,
+                 "id":73,
+                 "name":"frisbee4",
+                 "properties":[
+                        {
+                         "name":"enemy_id",
+                         "type":"string",
+                         "value":"frisbee4"
+                        }, 
+                        {
+                         "name":"path",
+                         "type":"object",
+                         "value":75
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1265.33333333333,
+                 "y":437.833333333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -402,12 +663,12 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }],
- "nextlayerid":10,
- "nextobjectid":68,
+ "nextlayerid":11,
+ "nextobjectid":76,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

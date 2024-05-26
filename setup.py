@@ -105,6 +105,7 @@ GAME_STATE_MAIN_MENU = 0
 GAME_STATE_GAMEPLAY = 1
 GAME_STATE_GAME_OVER = 2
 GAME_STATE_START_MATCH_COUNTDOWN = 3
+GAME_STATE_LOADING = 4
 
 # Game State Variables
 START_MATCH_COUNTDOWN_VALUE = 3
@@ -173,13 +174,8 @@ OBJECT_NAME_PROJECTILE = "projectile"
 P1_ID = "player1"
 P2_ID = "player2"
 
-FRISBEE_1_ID = "frisbee1"
-FRISBEE_2_ID = "frisbee2"
-
-ASPERSOR_1_ID = "aspersor1"
-ASPERSOR_2_ID = "aspersor2"
-ASPERSOR_3_ID = "aspersor3"
-ASPERSOR_4_ID = "aspersor4"
+FRISBEE_ID_PREFIX = "frisbee"
+ASPERSOR_ID_PREFIX = "aspersor"
 
 OBJECT_PROJECTILE_ATTR = "frisbee_id"
 OBJECT_ENEMY_ATTR = "enemy_id"

@@ -121,9 +121,8 @@ class Player(arcade.Sprite):
             if self.physics_engine.can_jump():
                 self.change_y = self.jump_speed 
                 arcade.play_sound(self.jump_sound)           
-        elif self.keybindings["down"] in self.pressed_keys:
-            self.change_y = -self.speed
-        
+        # elif self.keybindings["down"] in self.pressed_keys:
+        #     self.change_y = -self.speed        
         if self.keybindings["right"] in self.pressed_keys:
             self.change_x = self.speed
         elif self.keybindings["left"] in self.pressed_keys:

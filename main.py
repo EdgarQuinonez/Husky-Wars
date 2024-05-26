@@ -1,11 +1,12 @@
+from time import sleep
 import arcade, random, math
 from scripts.enemy import Aspersor
-from setup import ASPERSOR_1_ID, ASPERSOR_2_ID, ASPERSOR_3_ID, ASPERSOR_4_ID, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_HARD_RESET_COOLDOWN, COLLECTIBLE_SOUND_PATH, COLLECTIBLE_SPAWN_COOLDOWN, FALLING_SOUND_PATH, FRISBEE_1_ID, FRISBEE_2_ID, GAME_STATE_START_MATCH_COUNTDOWN, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_POWER_UP, OBJECT_NAME_PROJECTILE, P1_ID, P2_ID, POWER_UP_COOLDOWN, POWER_UP_DROP_RATE, POWER_UP_PATH, POWER_UP_POINTS, POWER_UP_SOUND_PATH, POWER_UP_TIME_INCREASE, PROJECTILE_SOUND_PATH, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
+from setup import ASPERSOR_ID_PREFIX, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_HARD_RESET_COOLDOWN, COLLECTIBLE_SOUND_PATH, COLLECTIBLE_SPAWN_COOLDOWN, FALLING_SOUND_PATH, FRISBEE_ID_PREFIX, GAME_STATE_GAME_OVER, GAME_STATE_GAMEPLAY, GAME_STATE_START_MATCH_COUNTDOWN, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_POWER_UP, OBJECT_NAME_PROJECTILE, P1_ID, P2_ID, POWER_UP_COOLDOWN, POWER_UP_DROP_RATE, POWER_UP_PATH, POWER_UP_POINTS, POWER_UP_SOUND_PATH, POWER_UP_TIME_INCREASE, PROJECTILE_SOUND_PATH, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, START_MATCH_COUNTDOWN_VALUE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
 from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
 from scripts.countdown import Countdown
 
-
+GAME_STATE = GAME_STATE_START_MATCH_COUNTDOWN
 
 class MyGame(arcade.Window):
     """
@@ -22,11 +23,14 @@ class MyGame(arcade.Window):
         self.p2_sprite = None
         self.countdown = None
         self.countdown_text = None
+        self.start_countdown = None
+        self.start_countdown_text = None
         self.time_since_power_up_spawn = None
         self.time_since_collectibles_refresh = None
         self.time_since_collectibles_hard_reset = None
         self.collectible_hard_reset_needed = False
         self.collectible_refresh_needed = False
+        self.GAME_STATE = None
         
         self.collectible_sound = arcade.load_sound(COLLECTIBLE_SOUND_PATH)
         self.power_up_sound = arcade.load_sound(POWER_UP_SOUND_PATH)
@@ -40,9 +44,6 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
-        
-        global GAME_STATE
-        GAME_STATE = GAME_STATE_START_MATCH_COUNTDOWN
         
         self.scene = arcade.Scene()
         self.time_since_power_up_spawn = 0
@@ -105,16 +106,17 @@ class MyGame(arcade.Window):
         self.scene.add_sprite_list(OBJECT_NAME_POWER_UP, self.power_up_list)
         self.generate_collectibles()                          
         
-        self.countdown = Countdown()
-        self.countdown.start()
-        self.countdown_text = f"{self.countdown.remaining_time}"
         
+        self.countdown_text = "60"
+        
+        self.GAME_STATE = GAME_STATE_START_MATCH_COUNTDOWN              
+        self.start_countdown = Countdown(START_MATCH_COUNTDOWN_VALUE)
+        self.start_countdown_text = str(START_MATCH_COUNTDOWN_VALUE)
+        self.start_countdown.start()
+
         # Enemies setup
-        self.aspersores_ids = [ASPERSOR_1_ID, ASPERSOR_2_ID, ASPERSOR_3_ID, ASPERSOR_4_ID]
-        self.frisbee_ids = [FRISBEE_1_ID, FRISBEE_2_ID]
-        
-        # # Create enemies instances
-        # self.enemies = arcade.SpriteList()
+        self.aspersores_ids = [obj.properties[OBJECT_ENEMY_ATTR] for obj in self.enemy_spawn_objs if obj.properties[OBJECT_ENEMY_ATTR][:len(ASPERSOR_ID_PREFIX)] == ASPERSOR_ID_PREFIX]
+        self.fribees_ids = [obj.properties[OBJECT_ENEMY_ATTR] for obj in self.enemy_spawn_objs if obj.properties[OBJECT_ENEMY_ATTR][:len(FRISBEE_ID_PREFIX)] == FRISBEE_ID_PREFIX]
         
         self.aspersores_objs = {}
         
@@ -292,6 +294,16 @@ class MyGame(arcade.Window):
             30,
             anchor_x="center",
         )
+        
+        if self.GAME_STATE == GAME_STATE_START_MATCH_COUNTDOWN:
+            arcade.draw_text(
+                self.start_countdown_text,
+                SCREEN_WIDTH // 2,
+                SCREEN_HEIGHT // 2,
+                arcade.csscolor.WHITE,
+                30,
+                anchor_x="center",
+            )
 
     def on_key_press(self, key, modifiers):
         self.p1_sprite.on_key_press(key, modifiers)
@@ -301,44 +313,57 @@ class MyGame(arcade.Window):
         self.p1_sprite.on_key_release(key, modifiers)
         self.p2_sprite.on_key_release(key, modifiers)
             
-    def on_update(self, delta_time: float):
-        self.p1_sprite.update()
-        self.p2_sprite.update()
+    def on_update(self, delta_time: float):        
+        if self.GAME_STATE == GAME_STATE_START_MATCH_COUNTDOWN:
+            self.start_countdown_text = str(self.start_countdown.remaining_time)
+            if self.start_countdown.remaining_time <= 0:
+                self.start_countdown.stop()
+                self.GAME_STATE = GAME_STATE_GAMEPLAY
+                self.countdown = Countdown()
+                self.countdown.start()
+                self.start_countdown_text = ""
+            else:
+                return  # Skip game updates during countdown
         
-        self.generate_collectibles(delta_time)        
+        if self.GAME_STATE == GAME_STATE_GAMEPLAY:   
+            self.p1_sprite.update()
+            self.p2_sprite.update()
+            
+            self.generate_collectibles(delta_time)
                 
-        # Separate collision checks
-        player1_coin_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene[OBJECT_NAME_COLLECTIBLES])
-        player2_coin_hit_list = arcade.check_for_collision_with_list(self.p2_sprite, self.scene[OBJECT_NAME_COLLECTIBLES])
-        
-        p1_power_up_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene[OBJECT_NAME_POWER_UP])
-        p2_power_up_hit_list = arcade.check_for_collision_with_list(self.p2_sprite, self.scene[OBJECT_NAME_POWER_UP])
+                    
+            # Separate collision checks
+            player1_coin_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene[OBJECT_NAME_COLLECTIBLES])
+            player2_coin_hit_list = arcade.check_for_collision_with_list(self.p2_sprite, self.scene[OBJECT_NAME_COLLECTIBLES])
+            
+            p1_power_up_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene[OBJECT_NAME_POWER_UP])
+            p2_power_up_hit_list = arcade.check_for_collision_with_list(self.p2_sprite, self.scene[OBJECT_NAME_POWER_UP])
 
-        for coin in player1_coin_hit_list:
-            coin.collect(self.p1_sprite)  # Update only Player 1's score
-            coin.update()
+            for coin in player1_coin_hit_list:
+                coin.collect(self.p1_sprite)  # Update only Player 1's score
+                coin.update()
 
-        for coin in player2_coin_hit_list:
-            coin.collect(self.p2_sprite)  # Update only Player 2's score
-            coin.update()
+            for coin in player2_coin_hit_list:
+                coin.collect(self.p2_sprite)  # Update only Player 2's score
+                coin.update()
+                
+            for power_up in p1_power_up_hit_list:
+                power_up.collect(self.p1_sprite, self.countdown)
+                power_up.update()
+                
+            for power_up in p2_power_up_hit_list:
+                power_up.collect(self.p2_sprite, self.countdown)
+                power_up.update()
             
-        for power_up in p1_power_up_hit_list:
-            power_up.collect(self.p1_sprite, self.countdown)
-            power_up.update()
+            self.spawn_enemies(delta_time)
             
-        for power_up in p2_power_up_hit_list:
-            power_up.collect(self.p2_sprite, self.countdown)
-            power_up.update()
-        
-        self.spawn_enemies(delta_time)
-        
-        # Game Over
-        # Countdown Check and Match Reset
-        self.countdown_text = f"{self.countdown.remaining_time}"
-        if self.countdown.remaining_time <= 0:
-            # Open game over view (winner/loser total score, scoreboard and play again buttons)
-            
-            self.setup()  # Reset the game when the countdown reaches 0
+            # Countdown Check and Match Reset
+            self.countdown_text = f"{self.countdown.remaining_time}"
+            # Game Over
+            if self.countdown.remaining_time <= 0:
+                # Open game over view (winner/loser total score, scoreboard and play again buttons)
+                # self.GAME_STATE = GAME_STATE_GAME_OVER
+                self.setup()  # Reset the game when the countdown reaches 0
 
 def main():
     """Main function"""
