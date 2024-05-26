@@ -52,6 +52,6 @@ class Powerup(Collectible):
     def collect(self, player, countdown_ref):
         super().collect(player)
         player.score += self.points
-        countdown_ref.remaining_time += self.time_increase
+        countdown_ref.increase_time(self.time_increase)
         arcade.play_sound(self.power_up_sound)
 

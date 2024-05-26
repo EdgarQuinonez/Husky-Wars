@@ -1,9 +1,10 @@
 import arcade, random, math
 from scripts.enemy import Aspersor
-from setup import ASPERSOR_1_ID, ASPERSOR_2_ID, ASPERSOR_3_ID, ASPERSOR_4_ID, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_SOUND_PATH, FALLING_SOUND_PATH, FRISBEE_1_ID, FRISBEE_2_ID, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_POWER_UP, OBJECT_NAME_PROJECTILE, P1_ID, P2_ID, POWER_UP_COOLDOWN, POWER_UP_DROP_RATE, POWER_UP_PATH, POWER_UP_POINTS, POWER_UP_SOUND_PATH, POWER_UP_TIME_INCREASE, PROJECTILE_SOUND_PATH, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
+from setup import ASPERSOR_1_ID, ASPERSOR_2_ID, ASPERSOR_3_ID, ASPERSOR_4_ID, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_HARD_RESET_COOLDOWN, COLLECTIBLE_SOUND_PATH, COLLECTIBLE_SPAWN_COOLDOWN, FALLING_SOUND_PATH, FRISBEE_1_ID, FRISBEE_2_ID, GAME_STATE_START_MATCH_COUNTDOWN, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_POWER_UP, OBJECT_NAME_PROJECTILE, P1_ID, P2_ID, POWER_UP_COOLDOWN, POWER_UP_DROP_RATE, POWER_UP_PATH, POWER_UP_POINTS, POWER_UP_SOUND_PATH, POWER_UP_TIME_INCREASE, PROJECTILE_SOUND_PATH, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_START_X, P1_START_Y, P2_START_Y, P2_START_X, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, GRAVITY, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, TILE_SIZE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
 from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
 from scripts.countdown import Countdown
+
 
 
 class MyGame(arcade.Window):
@@ -21,7 +22,11 @@ class MyGame(arcade.Window):
         self.p2_sprite = None
         self.countdown = None
         self.countdown_text = None
-        self.time_since_power_up_spawn = 0
+        self.time_since_power_up_spawn = None
+        self.time_since_collectibles_refresh = None
+        self.time_since_collectibles_hard_reset = None
+        self.collectible_hard_reset_needed = False
+        self.collectible_refresh_needed = False
         
         self.collectible_sound = arcade.load_sound(COLLECTIBLE_SOUND_PATH)
         self.power_up_sound = arcade.load_sound(POWER_UP_SOUND_PATH)
@@ -36,7 +41,13 @@ class MyGame(arcade.Window):
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
         
+        global GAME_STATE
+        GAME_STATE = GAME_STATE_START_MATCH_COUNTDOWN
+        
         self.scene = arcade.Scene()
+        self.time_since_power_up_spawn = 0
+        self.time_since_collectibles_refresh = COLLECTIBLE_SPAWN_COOLDOWN
+        self.time_since_collectibles_hard_reset = COLLECTIBLE_HARD_RESET_COOLDOWN
         
         map_name = TILE_MAP_PATH
         
@@ -127,70 +138,93 @@ class MyGame(arcade.Window):
                     
     def generate_collectibles(self, delta_time: float = 1/160):
         # Define possible collectible types
-        collectible_types = ["Coin", "Trap"]                       
+        collectible_types = ["Coin", "Trap"]
+        # Time tracking for collectibles and power-ups
+        self.time_since_collectibles_refresh += delta_time
+        self.time_since_collectibles_hard_reset += delta_time
+        
+        # Collectible hard reset
+        if self.time_since_collectibles_hard_reset >= COLLECTIBLE_HARD_RESET_COOLDOWN and self.collectible_refresh_needed == False:
+            self.time_since_collectibles_hard_reset = 0  # Reset the timer
+            # Remove all existing collectibles from the scene and list
+            for collectible in self.collectible_list:
+                collectible.remove_from_sprite_lists()
+            self.collectible_list = []  # Clear the list
+            
+            self.collectible_hard_reset_needed = True  # Flag that a hard reset is needed
+            
+        # Collectible refresh (only if enough time has passed since the last refresh)
+        elif self.time_since_collectibles_refresh >= COLLECTIBLE_SPAWN_COOLDOWN and self.collectible_hard_reset_needed == False:
+            self.time_since_collectibles_refresh = 0  # Reset the timer
+            
+            self.collectible_refresh_needed = True  # Flag that a refresh is needed
+            
         # Iterate over spawn points and create collectibles
-        for collectible_object in self.collectible_layer:
-            cartesian = self.tile_map.get_cartesian(
-                collectible_object.shape[0], collectible_object.shape[1]
-            )            
-            collectible = None                        
-            # Check for existing collectibles at this position
-            existing_collectible = None
-    
+        if self.collectible_refresh_needed or self.collectible_hard_reset_needed:
+            for collectible_object in self.collectible_layer:
+                    cartesian = self.tile_map.get_cartesian(
+                        collectible_object.shape[0], collectible_object.shape[1]
+                    )            
+                    collectible = None                        
+                    # Check for existing collectibles at this position
+                    existing_collectible = None
+            
 
-            # If no existing collectible found, spawn a new one
-            for sprite in self.collectible_list:
-                if sprite.center_x == math.floor(
-                    cartesian[0] * TILE_SCALING * self.tile_map.tile_width
-                ) and sprite.center_y == math.floor(
-                    (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
-                ):
-                    existing_collectible = sprite
-                    break
-                
-            if existing_collectible is None: 
-                    
-                collectible_type = random.choice(collectible_types)  # Randomly choose the type
-                
-                if collectible_type == "Coin":
-                    
-                    if random.random() < GOOD_COLLECTIBLE_RARE_DROP_RATE:
-                        collectible = Coin(GOOD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_RARE_POINTS)
-                    elif random.random() < GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE:
-                        collectible = Coin(GOOD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_UNCOMMON_POINTS)
-                    elif random.random() <= GOOD_COLLECTIBLE_COMMON_DROP_RATE:
-                        collectible = Coin(GOOD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_POINTS)
+                    # If no existing collectible found, spawn a new one
+                    for sprite in self.collectible_list:
+                        if sprite.center_x == math.floor(
+                            cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+                        ) and sprite.center_y == math.floor(
+                            (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+                        ):
+                            existing_collectible = sprite
+                            break
                         
-                    
-                    
+                    if existing_collectible is None: 
+                            
+                        collectible_type = random.choice(collectible_types)  # Randomly choose the type
                         
-                elif collectible_type == "Trap":
-                
-                    if random.random() < BAD_COLLECTIBLE_RARE_DROP_RATE:
-                        collectible = Trap(BAD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_RARE_POINTS)
-                    elif random.random() < BAD_COLLECTIBLE_UNCOMMON_DROP_RATE:
-                        collectible = Trap(BAD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_UNCOMMON_POINTS)
-                    elif random.random() <= BAD_COLLECTIBLE_COMMON_DROP_RATE:
-                        collectible = Trap(BAD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_COMMON_POINTS)
-                    
+                        if collectible_type == "Coin":
+                            
+                            if random.random() < GOOD_COLLECTIBLE_RARE_DROP_RATE:
+                                collectible = Coin(GOOD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_RARE_POINTS)
+                            elif random.random() < GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE:
+                                collectible = Coin(GOOD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_UNCOMMON_POINTS)
+                            elif random.random() <= GOOD_COLLECTIBLE_COMMON_DROP_RATE:
+                                collectible = Coin(GOOD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_POINTS)
+                                
+                            
+                            
+                                
+                        elif collectible_type == "Trap":
+                        
+                            if random.random() < BAD_COLLECTIBLE_RARE_DROP_RATE:
+                                collectible = Trap(BAD_COLLECTIBLE_RARE_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_RARE_POINTS)
+                            elif random.random() < BAD_COLLECTIBLE_UNCOMMON_DROP_RATE:
+                                collectible = Trap(BAD_COLLECTIBLE_UNCOMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_UNCOMMON_POINTS)
+                            elif random.random() <= BAD_COLLECTIBLE_COMMON_DROP_RATE:
+                                collectible = Trap(BAD_COLLECTIBLE_COMMON_PATH, COLLECTIBLE_SCALING, BAD_COLLECTIBLE_COMMON_POINTS)
+                            
 
-                                                                   
-                # Only add to the lists if a collectible was created
-                if collectible is not None:  
-                    collectible.center_x = math.floor(
-                        cartesian[0] * TILE_SCALING * self.tile_map.tile_width
-                    )
-                    collectible.center_y = math.floor(
-                        (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
-                    )
-                    
-                    if collectible_type == "Coin":
-                        collectible.setup(self.collectible_sound)
-                    elif collectible_type == "Trap":
-                        collectible.setup(self.hurt_sound)
-    
-                    self.collectible_list.append(collectible)
-                    self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible) # Creating new layer with collectibles and adding each sprite.
+                                                                        
+                        # Only add to the lists if a collectible was created
+                        if collectible is not None:  
+                            collectible.center_x = math.floor(
+                                cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+                            )
+                            collectible.center_y = math.floor(
+                                (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+                            )
+                            
+                            if collectible_type == "Coin":
+                                collectible.setup(self.collectible_sound)
+                            elif collectible_type == "Trap":
+                                collectible.setup(self.hurt_sound)
+            
+                            self.collectible_list.append(collectible)
+                            self.scene.add_sprite(OBJECT_NAME_COLLECTIBLES, collectible) # Creating new layer with collectibles and adding each sprite.
+            self.collectible_refresh_needed = False  # Reset the flag
+            self.collectible_hard_reset_needed = False  # Reset the flag        
         
         for power_up_object in self.power_up_spawn_objs:
             cartesian = self.tile_map.get_cartesian(
@@ -209,11 +243,9 @@ class MyGame(arcade.Window):
                 ):
                     existing_power_up = sprite
                     break
-                
-            if existing_power_up is not None:
-                print("Power up already exists")
+                               
+            if existing_power_up is None:
                 self.time_since_power_up_spawn += delta_time                
-            elif existing_power_up is None:
                 if random.random() <= POWER_UP_DROP_RATE and self.time_since_power_up_spawn >= POWER_UP_COOLDOWN:
                     self.time_since_power_up_spawn = 0
                     power_up = Powerup(POWER_UP_PATH, COLLECTIBLE_SCALING, POWER_UP_POINTS, POWER_UP_TIME_INCREASE)
@@ -226,8 +258,7 @@ class MyGame(arcade.Window):
                     power_up.setup(self.power_up_sound)
                     self.power_up_list.append(power_up)
                     self.scene.add_sprite(OBJECT_NAME_POWER_UP, power_up)
-            
-                        
+                                    
     def get_enemy_spawn_point(self, enemy_id):        
         for spawn in self.enemy_spawn_objs:            
             if spawn.properties["enemy_id"] == enemy_id:
@@ -245,9 +276,7 @@ class MyGame(arcade.Window):
         for aspersor in self.aspersores_objs.values():
             
             aspersor.update(delta_time)
-        
-
-                                                                                                   
+                                                                                                           
     def on_draw(self):
         """Render the screen."""        
         self.clear()        
@@ -267,8 +296,7 @@ class MyGame(arcade.Window):
     def on_key_press(self, key, modifiers):
         self.p1_sprite.on_key_press(key, modifiers)
         self.p2_sprite.on_key_press(key, modifiers)
-                    
-        
+                            
     def on_key_release(self, key, modifiers):
         self.p1_sprite.on_key_release(key, modifiers)
         self.p2_sprite.on_key_release(key, modifiers)
@@ -277,10 +305,7 @@ class MyGame(arcade.Window):
         self.p1_sprite.update()
         self.p2_sprite.update()
         
-        # Check collectible spawn cooldown to regenerate collectibles
-        if self.countdown.remaining_time % 5 == 0:            
-            self.generate_collectibles()
-        
+        self.generate_collectibles(delta_time)        
                 
         # Separate collision checks
         player1_coin_hit_list = arcade.check_for_collision_with_list(self.p1_sprite, self.scene[OBJECT_NAME_COLLECTIBLES])
@@ -307,18 +332,19 @@ class MyGame(arcade.Window):
         
         self.spawn_enemies(delta_time)
         
+        # Game Over
         # Countdown Check and Match Reset
         self.countdown_text = f"{self.countdown.remaining_time}"
         if self.countdown.remaining_time <= 0:
+            # Open game over view (winner/loser total score, scoreboard and play again buttons)
+            
             self.setup()  # Reset the game when the countdown reaches 0
-
 
 def main():
     """Main function"""
     window = MyGame()
     window.setup()
     arcade.run()
-
 
 if __name__ == "__main__":
     main()
