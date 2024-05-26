@@ -158,15 +158,11 @@
                 {
                  "height":0,
                  "id":68,
-                 "name":"Frisbee 1 Path",
+                 "name":"Frisbee 2 Path",
                  "polyline":[
                         {
-                         "x":-4,
-                         "y":-113.333333333333
-                        }, 
-                        {
-                         "x":50,
-                         "y":-14.6666666666667
+                         "x":52,
+                         "y":9.33333333333326
                         }, 
                         {
                          "x":334.5,
@@ -200,7 +196,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"frisbee1"
+                         "value":"frisbee2"
                         }],
                  "rotation":0,
                  "type":"",
@@ -212,12 +208,8 @@
                 {
                  "height":0,
                  "id":70,
-                 "name":"Frisbee 2 Path",
+                 "name":"Frisbee 1 Path",
                  "polyline":[
-                        {
-                         "x":0,
-                         "y":0
-                        }, 
                         {
                          "x":301.333333333333,
                          "y":161.333333333333
@@ -234,7 +226,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"frisbee2"
+                         "value":"frisbee1"
                         }],
                  "rotation":0,
                  "type":"",
@@ -249,10 +241,6 @@
                  "name":"Frisbee 3 Path",
                  "polyline":[
                         {
-                         "x":0,
-                         "y":0
-                        }, 
-                        {
                          "x":-385.333333333333,
                          "y":2
                         }, 
@@ -261,8 +249,8 @@
                          "y":-68
                         }, 
                         {
-                         "x":-599.333333333333,
-                         "y":-232
+                         "x":-639.333333333333,
+                         "y":-214
                         }, 
                         {
                          "x":-852,
@@ -299,24 +287,12 @@
                          "y":0
                         }, 
                         {
-                         "x":-78.6667,
-                         "y":169.333
+                         "x":-324.6667,
+                         "y":61.333
                         }, 
                         {
-                         "x":-625.333,
-                         "y":-22.6667
-                        }, 
-                        {
-                         "x":-913.333,
-                         "y":-25.3333
-                        }, 
-                        {
-                         "x":-910.667,
-                         "y":-226.667
-                        }, 
-                        {
-                         "x":-844,
-                         "y":-100
+                         "x":-952.667,
+                         "y":-164.667
                         }, 
                         {
                          "x":-745.333,
@@ -474,7 +450,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -560,11 +536,6 @@
                          "name":"enemy_id",
                          "type":"string",
                          "value":"frisbee1"
-                        }, 
-                        {
-                         "name":"path",
-                         "type":"object",
-                         "value":68
                         }],
                  "rotation":0,
                  "type":"",
@@ -582,11 +553,6 @@
                          "name":"enemy_id",
                          "type":"string",
                          "value":"frisbee2"
-                        }, 
-                        {
-                         "name":"path",
-                         "type":"object",
-                         "value":70
                         }],
                  "rotation":0,
                  "type":"",
@@ -604,11 +570,6 @@
                          "name":"enemy_id",
                          "type":"string",
                          "value":"frisbee3"
-                        }, 
-                        {
-                         "name":"path",
-                         "type":"object",
-                         "value":72
                         }],
                  "rotation":0,
                  "type":"",
@@ -626,11 +587,6 @@
                          "name":"enemy_id",
                          "type":"string",
                          "value":"frisbee4"
-                        }, 
-                        {
-                         "name":"path",
-                         "type":"object",
-                         "value":75
                         }],
                  "rotation":0,
                  "type":"",

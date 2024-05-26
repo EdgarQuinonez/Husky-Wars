@@ -97,32 +97,32 @@
   </object>
  </objectgroup>
  <objectgroup id="10" name="trails">
-  <object id="68" name="Frisbee 1 Path" x="18" y="620">
-   <properties>
-    <property name="id" value="frisbee1"/>
-   </properties>
-   <polyline points="-4,-113.333 50,-14.6667 334.5,-205 751.333,-202.667 751.333,-13.3333 846,-13.3333 916.667,-120 1164.67,-9.33333 1216.67,-10.6667"/>
-  </object>
-  <object id="70" name="Frisbee 2 Path" x="13.3333" y="113.333">
+  <object id="68" name="Frisbee 2 Path" x="18" y="620">
    <properties>
     <property name="id" value="frisbee2"/>
    </properties>
-   <polyline points="0,0 301.333,161.333 918.667,69.3333 1265.33,-112"/>
+   <polyline points="52,9.33333 334.5,-205 751.333,-202.667 751.333,-13.3333 846,-13.3333 916.667,-120 1164.67,-9.33333 1216.67,-10.6667"/>
+  </object>
+  <object id="70" name="Frisbee 1 Path" x="13.3333" y="113.333">
+   <properties>
+    <property name="id" value="frisbee1"/>
+   </properties>
+   <polyline points="301.333,161.333 918.667,69.3333 1265.33,-112"/>
   </object>
   <object id="72" name="Frisbee 3 Path" x="1272" y="272">
    <properties>
     <property name="id" value="frisbee3"/>
    </properties>
-   <polyline points="0,0 -385.333,2 -599.333,-68 -599.333,-232 -852,-222 -1098,-60.6667 -1259.33,-158.667"/>
+   <polyline points="-385.333,2 -599.333,-68 -639.333,-214 -852,-222 -1098,-60.6667 -1259.33,-158.667"/>
   </object>
   <object id="75" name="Frisbee 4 Path" x="1265.33" y="438.667">
    <properties>
     <property name="id" value="frisbee4"/>
    </properties>
-   <polyline points="0,0 -78.6667,169.333 -625.333,-22.6667 -913.333,-25.3333 -910.667,-226.667 -844,-100 -745.333,-226.667 -657.333,-165.333 -438.667,-290.667 -940,-433.333 -1250.67,-328"/>
+   <polyline points="0,0 -324.667,61.333 -952.667,-164.667 -745.333,-226.667 -657.333,-165.333 -438.667,-290.667 -940,-433.333 -1250.67,-328"/>
   </object>
  </objectgroup>
- <objectgroup id="6" name="collectible">
+ <objectgroup id="6" name="collectible" visible="0">
   <object id="6" x="175.333" y="209.333"/>
   <object id="11" x="848" y="80"/>
   <object id="13" x="1070.67" y="109.333"/>
@@ -158,25 +158,21 @@
   <object id="66" name="frisbee1" x="12" y="111">
    <properties>
     <property name="enemy_id" value="frisbee1"/>
-    <property name="path" type="object" value="68"/>
    </properties>
   </object>
   <object id="67" name="frisbee2" x="14" y="499">
    <properties>
     <property name="enemy_id" value="frisbee2"/>
-    <property name="path" type="object" value="70"/>
    </properties>
   </object>
   <object id="71" name="frisbee3" x="1269.33" y="271.333">
    <properties>
     <property name="enemy_id" value="frisbee3"/>
-    <property name="path" type="object" value="72"/>
    </properties>
   </object>
   <object id="73" name="frisbee4" x="1265.33" y="437.833">
    <properties>
     <property name="enemy_id" value="frisbee4"/>
-    <property name="path" type="object" value="75"/>
    </properties>
   </object>
  </objectgroup>

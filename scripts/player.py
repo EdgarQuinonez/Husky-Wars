@@ -199,4 +199,7 @@ class Player(arcade.Sprite):
         self.physics_engine.update()
         self.update_animation()
         self.player_fell(delta_time)
+        
+        if self.score < 0:
+            self.score = 0
              

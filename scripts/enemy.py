@@ -2,7 +2,7 @@ import arcade
 import math
 import random
 
-from setup import AGUA_SCALING, AGUA_SPRITE_PATH, ASPERSOR_SHOT_PENALIZATION_POINTS, ASPERSOR_SPAWN_SHOOT_DELAY, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_PROJECTILE
+from setup import AGUA_SCALING, AGUA_SPRITE_PATH, ASPERSOR_SHOT_PENALIZATION_POINTS, ASPERSOR_SPAWN_SHOOT_DELAY, FRISBEE_DEBOUNCE_TIME, FRISBEE_PENALIZATION_POINTS, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_PROJECTILE
 
 class Enemy(arcade.Sprite):
     def __init__(self, image_path, scaling, spawn_point):
@@ -15,8 +15,10 @@ class Enemy(arcade.Sprite):
         
         self.done = False # Tracks whether the enemy has been completed his movement
         
-        self.scene = None  # Reference to the scene object
-        self.water_sound = None  # Reference to the water sound object
+        self.scene = None
+        self.water_sound = None
+        self.spawn_sound_played = True
+        
         self.respawn_time = 0
         
 
@@ -32,7 +34,8 @@ class Enemy(arcade.Sprite):
         if not self.is_active and self.respawn_time == 0:
             self.is_active = True
             self.time_since_spawn = 0
-            self.collidable = False  # Disable hitbox            
+            self.collidable = False  # Disable hitbox  
+            self.spawn_sound_played = False         
             
             self.scene.add_sprite(OBJECT_NAME_ENEMY_SPAWN, self)  # Add to sprite lists
 
@@ -101,14 +104,13 @@ class Aspersor(Enemy):
             player_list = self.scene.get_sprite_list(OBJECT_NAME_PLAYER_SPAWN)  # Get the player sprite list
 
             # Check each projectile for collision with any player sprite
-            for projectile in self.projectiles:
-                # Use the sprite list for efficient collision detection
+            for projectile in self.projectiles:                
                 hit_list = arcade.check_for_collision_with_list(projectile, player_list)
                 
                 if hit_list:
                     projectile.remove_from_sprite_lists()  # Remove the projectile                    
                     for player in hit_list:
-                        player.take_damage(ASPERSOR_SHOT_PENALIZATION_POINTS)  # Example method to handle player damage
+                        player.take_damage(ASPERSOR_SHOT_PENALIZATION_POINTS)
                 
     def update(self, delta_time):
         super().update(delta_time)
@@ -124,24 +126,63 @@ class Aspersor(Enemy):
                     projectile.kill()                                        
                     
 class Frisbee(Enemy):
-    def __init__(self, image_path, scaling, spawn_point, speed):
+    def __init__(self, image_path, scaling, spawn_point, speed, trail, id): 
         super().__init__(image_path, scaling, spawn_point)
-        self.trail = []  # List to store the trail coordinates
-        self.speed = speed  # Speed at which the enemy moves
+        self.trail = trail  # Pass the trail directly
+        self.speed = speed
+        self.id = id
+        
+        self.projectile_sound = None
+        self.current_waypoint = 0  # Track the current waypoint index
+        self.harmless_timer = 0 
 
-    def follow_trail(self):
-        # Implement logic to follow the trail created in Tiled
-        if self.trail:
-            target_x, target_y = self.trail[0]  # Get the next target coordinates
-            self.change_x = target_x - self.center_x  # Calculate the change in x direction
-            self.change_y = target_y - self.center_y  # Calculate the change in y direction
-            distance = math.sqrt(self.change_x ** 2 + self.change_y ** 2)  # Calculate the distance to the target
-            if distance > 0:
-                self.change_x /= distance  # Normalize the change in x direction
-                self.change_y /= distance  # Normalize the change in y direction
-                self.change_x *= self.speed  # Scale the change in x direction by the projectile speed
-                self.change_y *= self.speed  # Scale the change in y direction by the projectile speed
-
+    def setup(self, scene, water_sound, projectile_sound):
+        super().setup(scene, water_sound)
+        self.projectile_sound = projectile_sound
+        
+    def spawn(self):
+        super().spawn()
+        if not self.spawn_sound_played:            
+            self.spawn_sound_played = True
+            arcade.play_sound(self.projectile_sound)
+        
+    
+    def follow_trail(self, delta_time: float = 1 / 60):
+        if self.is_active and self.current_waypoint < len(self.trail):            
+            target_x, target_y = self.trail[self.current_waypoint]
+            
+    
+            dx = (target_x - self.center_x) 
+            dy = (target_y - self.center_y)
+                  
+            distance = math.hypot(dx, dy)
+            
+            if distance <= self.speed * delta_time:  
+                self.current_waypoint += 1
+                if self.current_waypoint >= len(self.trail):
+                    self.done = True
+                    self.current_waypoint = 0
+            else:
+                self.change_x = dx / distance * self.speed 
+                self.change_y = dy / distance * self.speed
+                self.center_x += self.change_x * delta_time
+                self.center_y += self.change_y * delta_time
+         
+                                
+            player_list = self.scene.get_sprite_list(OBJECT_NAME_PLAYER_SPAWN)                    
+            hit_list = arcade.check_for_collision_with_list(self, player_list)
+                
+            # Harmless Period
+            if self.harmless_timer > 0:
+                self.harmless_timer -= delta_time
+            else:  # Harmless period is over or not started
+                if hit_list: 
+                    for player in hit_list:
+                        player.take_damage(FRISBEE_PENALIZATION_POINTS)
+                    self.harmless_timer = FRISBEE_DEBOUNCE_TIME
+                
+            
+                    
     def update(self, delta_time):
         super().update(delta_time)
         self.follow_trail()
