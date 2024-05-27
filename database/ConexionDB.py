@@ -1,87 +1,81 @@
 import sqlite3
 
-class ConexionDB():
-    def __init__(self, ruta_db):        
-        self.ruta_db = ruta_db        
+class ConexionBD:
+    def __init__(self):
+        self.create_tables(self)
         
-    def connect_db(self):
-        return sqlite3.connect(self.ruta_db)
+
+    @staticmethod
+    def connect_db():
+        return sqlite3.connect("database/sqlite.db")
     
-    def add_nombre(player_name):
-        connection = ConexionJugadoresBD.connect_db()
-        cursor = connection.cursor()
+    @staticmethod
+    def create_tables(self):
+        conexion = self.connect_db()
+        cursor = conexion.cursor()
         cursor.execute("""
-        INSERT INTO jugadores (NamePlayer)
-        VALUES (?)
-        """, (player_name,))
-        connection.commit()
-        connection.close()
-        
-    def add_game_record(nombre, dificultad, duracion_total, puntaje, fecha_partida):
-        conn = ConexionPuntajeBD.connect_db()
+            CREATE TABLE IF NOT EXISTS jugadores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                puntaje INTEGER,
+                duracion_total INTEGER
+            );
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS puntaje (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                dificultad TEXT,
+                duracion_total INTEGER,
+                puntaje INTEGER,
+                fecha_partida DATE,
+                FOREIGN KEY (nombre) REFERENCES jugadores(nombre)
+            );
+        """)
+
+        conexion.commit()
+        conexion.close()
+
+    @staticmethod
+    def add_game_record(self, nombre, puntaje, duracion_total):
+        conn = self.connect_db()
         cursor = conn.cursor()
         cursor.execute('''
-        INSERT INTO puntaje (nombre, dificultad, duracion_total, puntaje, fecha_partida)
-        VALUES (?, ?, ?, ?, ?)
-        ''', (nombre, dificultad, duracion_total, puntaje, fecha_partida))
+        INSERT INTO jugadores (nombre, puntaje, duracion_total)
+        VALUES (?, ?, ?)
+        ''', (nombre, puntaje, duracion_total))
         conn.commit()
         conn.close()
 
-    #@staticmethod
-    def get_high_score(nombre):
-        connection = ConexionPuntajeBD.connect_db()
+    @staticmethod
+    def get_top_50_scores_with_duration_60(self):
+        connection = self.connect_db()
         cursor = connection.cursor()
         cursor.execute('''
-        SELECT nombre, MAX(puntaje)
-        FROM puntaje
-        WHERE nombre = ?
-        GROUP BY nombre
-        ''', (nombre,))
-        result = cursor.fetchone()
+        SELECT nombre, puntaje, duracion_total
+        FROM jugadores
+        WHERE duracion_total = 60
+        ORDER BY puntaje DESC
+        LIMIT 50
+        ''')
+        results = cursor.fetchall()
         connection.close()
-        return result
         
+        return results
+
+    @staticmethod
+    def get_top_50_scores(self):
+        connection = self.connect_db()
+        cursor = connection.cursor()
+        cursor.execute('''
+        SELECT nombre, puntaje, duracion_total
+        FROM jugadores
+        ORDER BY puntaje DESC
+        LIMIT 50
+        ''')
+        results = cursor.fetchall()
+        connection.close()
+        
+        return results
     
-
-class ConexionJugadoresBD(ConexionDB):
-    def __init__(self):
-        super().__init__()
-
-    #@staticmethod
-    
-
-    #@staticmethod
-    
-
-class ConexionPuntajeBD:
-    def __init__(self):
-        super().__init__()
-
-    #@staticmethod
-    def connect_db():
-        return sqlite3.connect("puntaje.db")
-
-    #@staticmethod
-    
-
-
-
-# Agregar un nuevo jugador
-ConexionJugadoresBD.add_nombre("Jugador1")
-
-# Agregar un nuevo registro de juego
-ConexionPuntajeBD.add_game_record("Jugador1", "Difícil", 120, 5000, "2024-05-24")
-
-# Obtener la mayor puntuación del jugador
-result = ConexionPuntajeBD.get_high_score("Jugador1")
-if result:
-    nombre, max_puntaje = result
-    print(f"Jugador: {nombre}, Mayor Puntuación: {max_puntaje}")
-else:
-    print(f"No se encontraron registros para el jugador Jugador1.")
-    
-                   
-
-    #Tambien tendria que meter como consulta cual es el jugador con mayor puntuacion 
-    #Para que gema lo pueda meter en su tabla de high score, ya esta 
-    #Lo que esta faltando ahora es si tenemos que hacer un puntaje para cada jugador que son dos 
