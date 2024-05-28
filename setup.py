@@ -4,7 +4,22 @@ import arcade.key
 P1_ANIMATIONS_PATH = "assets/character/p1"
 P2_ANIMATIONS_PATH = "assets/character/p2"
 
+MENU_BG_PATH = "assets/background_menu.png"
+TITLE_IMAGE_PATH = "assets/buttons/title.png"
+JUGAR_BUTTON_PATH = "assets/buttons/jugar.png"
+JUGAR_HOVER_BUTTON_PATH = "assets/buttons/jugar_hover.png"
+OPCIONES_BUTTON_PATH = "assets/buttons/opciones.png"
+OPCIONES_HOVER_BUTTON_PATH = "assets/buttons/opciones_hover.png"
+COMO_BUTTON_PATH = "assets/buttons/como.png"
+COMO_HOVER_BUTTON_PATH = "assets/buttons/como_hover.png"
+SALIR_BUTTON_PATH = "assets/buttons/salir.png"
+SALIR_HOVER_BUTTON_PATH = "assets/buttons/salir_hover.png"
+
+
 # Paths to sound assets
+CLICK_SOUND_PATH = "assets/sounds/Button.mp3"
+MENU_SOUNDTRACK_PATH = "assets/sounds/menu_soundtrack.mp3"
+
 JUMP_SOUND_PATH = "assets/sounds/jump.wav"
 FALLING_SOUND_PATH = "assets/sounds/fall.wav"
 HURT_SOUND_PATH = "assets/sounds/hurt.wav"
@@ -84,7 +99,6 @@ ASPERSOR_SPAWN_SHOOT_DELAY = 2
 # Scaling and positioning
 CHARACTER_SCALING = 1
 ASPERSOR_SCALING = 0.125
-TILE_SCALING = 1.2
 COLLECTIBLE_SCALING = 0.125
 
 TILE_SIZE = 32
@@ -93,14 +107,27 @@ TILE_SIZE = 32
 GRAVITY = 1
 
 # Window
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
+
+ASPECT_RATIO = SCREEN_WIDTH / SCREEN_HEIGHT
+
 TILE_WIDTH = 40
 TILE_HEIGHT = 22
 
+MAP_WIDTH = TILE_SIZE * TILE_WIDTH
+MAP_HEIGHT = TILE_SIZE * TILE_HEIGHT
+
+TILE_SCALING = SCREEN_WIDTH / MAP_WIDTH
+SCALED_MAP_WIDTH = MAP_WIDTH * TILE_SCALING
+SCALED_MAP_HEIGHT = MAP_HEIGHT * TILE_SCALING
+
+LETTERBOX_HEIGHT = (SCREEN_HEIGHT - SCALED_MAP_HEIGHT) / 2
+
 TILE_MAP_PATH = "assets/con-enemigos.tmj"
 
-SCREEN_WIDTH = TILE_SIZE * TILE_WIDTH
-SCREEN_HEIGHT = TILE_SIZE * TILE_HEIGHT
-ASPECT_RATIO = SCREEN_HEIGHT / SCREEN_WIDTH
+
+
 SCREEN_TITLE = "Husky Wars!"
 
 # Game States
