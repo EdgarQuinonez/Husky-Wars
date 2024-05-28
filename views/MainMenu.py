@@ -1,7 +1,7 @@
 import arcade
 
 from components.button import Button
-from setup import CLICK_SOUND_PATH, COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, MENU_BG_PATH, OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE_IMAGE_PATH
+from setup import CLICK_SOUND_PATH, COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, MENU_BG_PATH, OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE_IMAGE_PATH
 
 
 class MainView(arcade.View):
@@ -23,10 +23,10 @@ class MainView(arcade.View):
 
         # Crear botones de menú
         scale = 0.5
-        self.buttons.append(Button(JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 500, self.on_click_play, scale=scale))
-        self.buttons.append(Button(OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 650, self.on_click_options, scale=scale))
-        self.buttons.append(Button(COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 800, self.on_click_how_to_play, scale=scale))
-        self.buttons.append(Button(SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 950, self.on_click_exit, scale=scale))
+        self.buttons.append(Button(JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 500, self.on_click_play, scale=scale))
+        self.buttons.append(Button(OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 650, self.on_click_options, scale=scale))
+        self.buttons.append(Button(COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 800, self.on_click_how_to_play, scale=scale))
+        self.buttons.append(Button(SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 950, self.on_click_exit, scale=scale))
 
         # Calcular el ancho máximo de los botones
         self.max_button_width = max(button.width for button in self.buttons)
@@ -48,18 +48,18 @@ class MainView(arcade.View):
         arcade.start_render()
 
         # Calculate scaling factors to fit the content to the viewport
-        scale_x = self.window.width / SCREEN_WIDTH
-        scale_y = self.window.height / SCREEN_HEIGHT
+        scale_x = self.window.width / WINDOW_WIDTH
+        scale_y = self.window.height / WINDOW_HEIGHT
 
         # Apply the scaling factors and set the viewport to cover the entire window
         # Apply scaling using set_viewport
         arcade.set_viewport(0, self.window.width / scale_x, 0, self.window.height / scale_y)  
      
         # Draw background, title, and buttons with the scaling applied
-        arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
+        arcade.draw_lrwh_rectangle_textured(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
         
-        title_image_x = SCREEN_WIDTH // 2
-        title_image_y = SCREEN_HEIGHT - 200
+        title_image_x = WINDOW_WIDTH // 2
+        title_image_y = WINDOW_HEIGHT - 200
         title_image_scale = 1  # You might need to adjust this if your title is too large
         arcade.draw_scaled_texture_rectangle(title_image_x, title_image_y, self.title_image, title_image_scale)
 

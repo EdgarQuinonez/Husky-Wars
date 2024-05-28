@@ -1,6 +1,6 @@
 import arcade
 
-from setup import GAME_OVER_BG_PATH, SCREEN_HEIGHT, SCREEN_WIDTH
+from setup import GAME_OVER_BG_PATH, WINDOW_HEIGHT, WINDOW_WIDTH
 from views.MainMenu import MainView
 
 
@@ -13,7 +13,7 @@ class GameOver(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.fondo)
+        arcade.draw_texture_rectangle(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.fondo)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:

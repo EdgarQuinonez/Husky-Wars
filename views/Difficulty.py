@@ -1,7 +1,7 @@
 import arcade
 
 from components.button import Button
-from setup import SCREEN_HEIGHT, SCREEN_WIDTH
+from setup import WINDOW_HEIGHT, WINDOW_WIDTH
 from views.Game import MyGame
 from views.MainMenu import MainView
 
@@ -16,15 +16,15 @@ class DifficultyView(arcade.View):
         arcade.set_background_color(arcade.color.DARK_TERRA_COTTA)
         scale = 0.5
         self.buttons.append(
-            Button("assets/buttons/normalbtn.png", "assets/buttons/normalbtn_hover.png", SCREEN_WIDTH - 1300,
-                   SCREEN_HEIGHT // 2, self.normal, scale=scale))
+            Button("assets/buttons/normalbtn.png", "assets/buttons/normalbtn_hover.png", WINDOW_WIDTH - 1300,
+                   WINDOW_HEIGHT // 2, self.normal, scale=scale))
         self.buttons.append(
-            Button("assets/buttons/dificilbtn.png", "assets/buttons/dificilbtn_hover.png", SCREEN_WIDTH - 600,
-                   SCREEN_HEIGHT // 2, self.dificil, scale=scale))
+            Button("assets/buttons/dificilbtn.png", "assets/buttons/dificilbtn_hover.png", WINDOW_WIDTH - 600,
+                   WINDOW_HEIGHT // 2, self.dificil, scale=scale))
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text("Dificultades", SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50,
+        arcade.draw_text("Dificultades", WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50,
                          arcade.color.WHITE, font_size=24, anchor_x="center")
         for button in self.buttons:
             button.draw()

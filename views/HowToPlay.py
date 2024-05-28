@@ -1,6 +1,6 @@
 import arcade
 
-from setup import SCREEN_HEIGHT, SCREEN_WIDTH
+from setup import WINDOW_HEIGHT, WINDOW_WIDTH
 from views.MainMenu import MainView
 
 
@@ -12,7 +12,7 @@ class HowPlayView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.howplay)
+        arcade.draw_texture_rectangle(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.howplay)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
