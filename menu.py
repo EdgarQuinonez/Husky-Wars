@@ -1,5 +1,5 @@
-import arcade
 from time import sleep
+import arcade.gui
 import arcade, random, math
 from database.ConexionDB import ConexionBD
 from scripts.enemy import Aspersor, Frisbee
@@ -119,10 +119,10 @@ class MainView(arcade.View):
                 button.action()
 
     def on_click_play(self):
+        self.player_view = NamePlayerView()
+        self.window.show_view(self.player_view)
         self.click_sound.play()
-        game_view = MyGame()
-        game_view.setup()
-        self.window.show_view(game_view)
+
 
     def on_click_options(self):
         self.option_view = OptionView()  # Cambia a la vista del menú
@@ -143,6 +143,117 @@ class MainView(arcade.View):
 
         # Cerrar la ventana actual
         arcade.close_window()
+
+
+class NamePlayerView(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        self.v_box = arcade.gui.UIBoxLayout()
+
+        self.label = arcade.gui.UILabel(text="Enter names for Player 1 and Player 2",
+                                        font_size=24,
+                                        text_color=arcade.color.WHITE,
+                                        anchor_x="center")
+        self.v_box.add(self.label.with_space_around(bottom=20))
+
+        self.player1_input = arcade.gui.UIInputText(text="", width=200)
+        self.player2_input = arcade.gui.UIInputText(text="", width=200)
+
+        self.v_box.add(self.player1_input.with_space_around(bottom=20))
+        self.v_box.add(self.player2_input.with_space_around(bottom=20))
+
+        self.confirm_button = arcade.gui.UIFlatButton(text="Confirm", width=200)
+        self.confirm_button.on_click = self.on_click_confirm
+        self.v_box.add(self.confirm_button.with_space_around(bottom=20))
+
+        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
+
+    def on_show(self):
+        arcade.set_background_color(arcade.color.DARK_TERRA_COTTA)
+
+    def on_draw(self):
+        arcade.start_render()
+        self.manager.draw()
+
+    def on_click_confirm(self, event):
+        player1_name = self.player1_input.text
+        player2_name = self.player2_input.text
+        print(f"Player 1: {player1_name}, Player 2: {player2_name}")
+        # Aquí puedes agregar la lógica para cambiar a la siguiente vista o almacenar los nombres.
+        self.dificult_view = DifficultyView()  # Cambia a la vista del menú
+        self.window.show_view(self.dificult_view)
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(MainView())
+
+    def on_hide_view(self):
+        self.manager.disable()
+
+class DifficultyView(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.buttons = []
+        self.selected_button_index = 0
+
+    def on_show(self):
+        arcade.set_background_color(arcade.color.DARK_TERRA_COTTA)
+        scale = 0.5
+        self.buttons.append(
+            Button("assets/buttons/normalbtn.png", "assets/buttons/normalbtn_hover.png", SCREEN_WIDTH - 1300,
+                   SCREEN_HEIGHT // 2, self.normal, scale=scale))
+        self.buttons.append(
+            Button("assets/buttons/dificilbtn.png", "assets/buttons/dificilbtn_hover.png", SCREEN_WIDTH - 600,
+                   SCREEN_HEIGHT // 2, self.dificil, scale=scale))
+
+    def on_draw(self):
+        arcade.start_render()
+        arcade.draw_text("Dificultades", SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50,
+                         arcade.color.WHITE, font_size=24, anchor_x="center")
+        for button in self.buttons:
+            button.draw()
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(MainView())
+        elif key == arcade.key.UP:
+            self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+            self.selected_button_index = (self.selected_button_index - 1) % len(self.buttons)
+            self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+        elif key == arcade.key.DOWN:
+            self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+            self.selected_button_index = (self.selected_button_index + 1) % len(self.buttons)
+            self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+        elif key == arcade.key.SPACE:
+            self.buttons[self.selected_button_index].action()
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        for index, button in enumerate(self.buttons):
+            if button.check_mouse_hover(x, y):
+                self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+                self.selected_button_index = index
+                self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        for index, button in enumerate(self.buttons):
+            if button.check_mouse_hover(x, y):
+                self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+                self.selected_button_index = index
+                self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+                button.action()
+
+    def normal(self):
+        print("normal")
+
+    def dificil(self):
+        #self.click_sound.play()
+        game_view = MyGame()
+        game_view.setup()
+        self.window.show_view(game_view)
+
 
 class OptionView(arcade.View):
     def on_show(self):
@@ -167,6 +278,21 @@ class HowPlayView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.howplay)
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(MainView())
+
+class GameOver(arcade.View):
+    def on_show(self):
+        arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
+        # Cargar la imagen de fondo
+        self.fondo = arcade.load_texture("fondo.png")
+        #los sprites de los perros ya estan xd nomas ponlos ahi en medio y ya lo acomodo yo
+
+    def on_draw(self):
+        arcade.start_render()
+        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.fondo)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
