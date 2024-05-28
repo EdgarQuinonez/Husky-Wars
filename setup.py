@@ -5,6 +5,7 @@ P1_ANIMATIONS_PATH = "assets/character/p1"
 P2_ANIMATIONS_PATH = "assets/character/p2"
 
 MENU_BG_PATH = "assets/background_menu.png"
+GAME_OVER_BG_PATH = "assets/game_over_bg.png"
 TITLE_IMAGE_PATH = "assets/buttons/title.png"
 JUGAR_BUTTON_PATH = "assets/buttons/jugar.png"
 JUGAR_HOVER_BUTTON_PATH = "assets/buttons/jugar_hover.png"
@@ -14,6 +15,7 @@ COMO_BUTTON_PATH = "assets/buttons/como.png"
 COMO_HOVER_BUTTON_PATH = "assets/buttons/como_hover.png"
 SALIR_BUTTON_PATH = "assets/buttons/salir.png"
 SALIR_HOVER_BUTTON_PATH = "assets/buttons/salir_hover.png"
+DIFFICULTY_BUTTON_PATH = "assets/buttons/dificultad.png"
 
 
 # Paths to sound assets

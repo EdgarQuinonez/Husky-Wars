@@ -2,8 +2,6 @@ import arcade
 
 from components.button import Button
 from setup import CLICK_SOUND_PATH, COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, MENU_BG_PATH, OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE_IMAGE_PATH
-from views.Game import MyGame
-
 
 
 class MainView(arcade.View):
@@ -20,7 +18,6 @@ class MainView(arcade.View):
 
         # Cargar la imagen de fondo
         self.background = arcade.load_texture(MENU_BG_PATH)
-
         # Cargar la imagen del título
         self.title_image = arcade.load_texture(TITLE_IMAGE_PATH)
 
@@ -97,9 +94,9 @@ class MainView(arcade.View):
                 button.action()
 
     def on_click_play(self):
+        from views.NamePlayer import NamePlayerView
         self.click_sound.play()
-        game_view = MyGame()
-        game_view.setup()
+        game_view = NamePlayerView()
         self.window.show_view(game_view)
 
     def on_click_options(self):
