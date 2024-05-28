@@ -1,4 +1,3 @@
-from time import sleep
 import arcade, random, math
 from database.ConexionDB import ConexionBD
 from scripts.enemy import Aspersor, Frisbee
@@ -7,9 +6,8 @@ from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
 from scripts.countdown import Countdown
 
-GAME_STATE = GAME_STATE_START_MATCH_COUNTDOWN
 
-class MyGame(arcade.Window):
+class MyGame(arcade.View):
     """
     Main application class.
     """
@@ -391,6 +389,7 @@ class MyGame(arcade.Window):
             if self.countdown.remaining_time <= 0:
                 # Open game over view (winner/loser total score, scoreboard and play again buttons)
                 # self.GAME_STATE = GAME_STATE_GAME_OVER
+                self.countdown.stop()
                 self.setup()  # Reset the game when the countdown reaches 0
 
 def main():
