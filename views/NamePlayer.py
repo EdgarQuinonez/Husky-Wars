@@ -1,6 +1,7 @@
 import arcade
 import arcade.gui
 
+from database.ConexionDB import ConexionBD
 from views.Difficulty import DifficultyView
 from views.MainMenu import MainView
 from components.button import Button
@@ -9,6 +10,7 @@ from setup import PLAYER_BG_PATH, WINDOW_WIDTH, WINDOW_HEIGHT, TITLE_NAME_PATH, 
 class NamePlayerView(arcade.View):
     def __init__(self):
         super().__init__()
+        self.db = ConexionBD()
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.buttons = []
@@ -112,11 +114,23 @@ class NamePlayerView(arcade.View):
                 button.action()
 
     def on_click_confirm(self):
-        player1_name = self.player1_input.text
-        player2_name = self.player2_input.text
-        print(f"Player 1: {player1_name}, Player 2: {player2_name}")
+        player1_name = self.player1_input.text.strip()
+        player2_name = self.player2_input.text.strip()
+        
+        p1_found = self.db.get_player_by_name(player1_name)
+        p2_found = self.db.get_player_by_name(player2_name)
+        
+        if not player1_name or not player2_name:
+            return
+        
+        if p1_found is None:
+            self.db.insert_player(player1_name)
+            
+        if p2_found is None:
+            self.db.insert_player(player2_name)
+            
         # Aquí puedes agregar la lógica para cambiar a la siguiente vista o almacenar los nombres.
-        self.dificult_view = DifficultyView()  # Cambia a la vista del menú
+        self.dificult_view = DifficultyView(player1_name, player2_name)  # Cambia a la vista del menú
         self.window.show_view(self.dificult_view)
 
     def on_key_press(self, key, modifiers):

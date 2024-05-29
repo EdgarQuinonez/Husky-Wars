@@ -2,53 +2,71 @@ import sqlite3
 
 class ConexionBD:
     def __init__(self):
-        self.create_tables(self)
+        self.create_tables()
         
-
     @staticmethod
     def connect_db():
         return sqlite3.connect("database/sqlite.db")
     
-    @staticmethod
+    
     def create_tables(self):
         conexion = self.connect_db()
         cursor = conexion.cursor()
-        cursor.execute("""
+
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS jugadores (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL,
-                puntaje INTEGER,
-                duracion_total INTEGER
+                nombre TEXT NOT NULL
             );
-        """)
+        ''')
 
-        cursor.execute("""
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS puntaje (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
-                dificultad TEXT,
+                dificultad INTEGER,
                 duracion_total INTEGER,
                 puntaje INTEGER,
-                fecha_partida DATE,
-                FOREIGN KEY (nombre) REFERENCES jugadores(nombre)
+                fecha_partida DATE                
             );
-        """)
+        ''')
 
         conexion.commit()
         conexion.close()
-
-    @staticmethod
-    def add_game_record(self, nombre, puntaje, duracion_total):
+       
+    def get_player_by_name(self, nombre):
         conn = self.connect_db()
         cursor = conn.cursor()
         cursor.execute('''
-        INSERT INTO jugadores (nombre, puntaje, duracion_total)
-        VALUES (?, ?, ?)
-        ''', (nombre, puntaje, duracion_total))
+        SELECT id, nombre
+        FROM jugadores
+        WHERE nombre = ?
+        ''', (nombre,))
+        player = cursor.fetchone()
+        conn.close()
+        return player
+    
+    def insert_player(self, nombre):
+        conn = self.connect_db()
+        cursor = conn.cursor()
+        cursor.execute('''
+        INSERT INTO jugadores (nombre)
+        VALUES (?)
+        ''', (nombre,))
+        conn.commit()
+        conn.close()
+        
+    def add_match_score(self, nombre, dificultad, duracion_total, puntaje, fecha_partida):
+        conn = self.connect_db()
+        cursor = conn.cursor()
+        cursor.execute('''
+        INSERT INTO puntaje (nombre, dificultad, duracion_total, puntaje, fecha_partida)
+        VALUES (?, ?, ?, ?, ?)
+        ''', (nombre, dificultad, duracion_total, puntaje, fecha_partida))
         conn.commit()
         conn.close()
 
-    @staticmethod
+    
     def get_top_50_scores_with_duration_60(self):
         connection = self.connect_db()
         cursor = connection.cursor()
@@ -64,18 +82,17 @@ class ConexionBD:
         
         return results
 
-    @staticmethod
-    def get_top_50_scores(self):
+    
+    def get_top_10_scores(self):
         connection = self.connect_db()
         cursor = connection.cursor()
         cursor.execute('''
         SELECT nombre, puntaje, duracion_total
-        FROM jugadores
+        FROM puntaje
         ORDER BY puntaje DESC
-        LIMIT 50
+        LIMIT 10
         ''')
         results = cursor.fetchall()
         connection.close()
         
-        return results
-    
+        return results    
