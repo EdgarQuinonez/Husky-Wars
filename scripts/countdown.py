@@ -2,7 +2,6 @@ import threading
 import time
 import math
 
-# Increment match duration when a player collects a power-up
 class Countdown:
     def __init__(self, match_duration_in_seconds=5):
         self.remaining_time = match_duration_in_seconds

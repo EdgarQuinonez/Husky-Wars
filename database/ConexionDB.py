@@ -33,6 +33,28 @@ class ConexionBD:
 
         conexion.commit()
         conexion.close()
+       
+    def get_player_by_name(self, nombre):
+        conn = self.connect_db()
+        cursor = conn.cursor()
+        cursor.execute('''
+        SELECT id, nombre
+        FROM jugadores
+        WHERE nombre = ?
+        ''', (nombre,))
+        player = cursor.fetchone()
+        conn.close()
+        return player
+    
+    def insert_player(self, nombre):
+        conn = self.connect_db()
+        cursor = conn.cursor()
+        cursor.execute('''
+        INSERT INTO jugadores (nombre)
+        VALUES (?)
+        ''', (nombre,))
+        conn.commit()
+        conn.close()
         
     def add_match_score(self, nombre, dificultad, duracion_total, puntaje, fecha_partida):
         conn = self.connect_db()
@@ -61,14 +83,14 @@ class ConexionBD:
         return results
 
     
-    def get_top_50_scores(self):
+    def get_top_10_scores(self):
         connection = self.connect_db()
         cursor = connection.cursor()
         cursor.execute('''
         SELECT nombre, puntaje, duracion_total
-        FROM jugadores
+        FROM puntaje
         ORDER BY puntaje DESC
-        LIMIT 50
+        LIMIT 10
         ''')
         results = cursor.fetchall()
         connection.close()
