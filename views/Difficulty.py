@@ -1,7 +1,7 @@
 import arcade
 
 from components.button import Button
-from setup import WINDOW_HEIGHT, WINDOW_WIDTH
+from setup import WINDOW_HEIGHT, WINDOW_WIDTH, TITLE_DIFF_PATH, BG_EXTRA_PATH
 from views.Game import MyGame
 from views.MainMenu import MainView
 
@@ -14,18 +14,37 @@ class DifficultyView(arcade.View):
 
     def on_show(self):
         arcade.set_background_color(arcade.color.DARK_TERRA_COTTA)
+
+        # Cargar la imagen de fondo
+        self.background = arcade.load_texture(BG_EXTRA_PATH)
+        # Cargar la imagen del título
+        self.title_image = arcade.load_texture(TITLE_DIFF_PATH)
+
         scale = 0.5
         self.buttons.append(
-            Button("assets/buttons/normalbtn.png", "assets/buttons/normalbtn_hover.png", WINDOW_WIDTH - 1300,
+            Button("assets/buttons/normalbtn.png", "assets/buttons/normalbtn_hover.png", WINDOW_WIDTH - 1100,
                    WINDOW_HEIGHT // 2, self.normal, scale=scale))
         self.buttons.append(
-            Button("assets/buttons/dificilbtn.png", "assets/buttons/dificilbtn_hover.png", WINDOW_WIDTH - 600,
+            Button("assets/buttons/dificilbtn.png", "assets/buttons/dificilbtn_hover.png", WINDOW_WIDTH - 500,
                    WINDOW_HEIGHT // 2, self.dificil, scale=scale))
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text("Dificultades", WINDOW_WIDTH // 2, WINDOW_HEIGHT - 50,
-                         arcade.color.WHITE, font_size=24, anchor_x="center")
+
+        # Calculate scaling factors to fit the content to the viewport
+        scale_x = self.window.width / WINDOW_WIDTH
+        scale_y = self.window.height / WINDOW_HEIGHT
+
+        # Apply the scaling factors and set the viewport to cover the entire window
+        # Apply scaling using set_viewport
+        arcade.set_viewport(0, self.window.width / scale_x, 0, self.window.height / scale_y)
+
+        # Draw background, title, and buttons with the scaling applied
+        arcade.draw_lrwh_rectangle_textured(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
+        title_image_x = WINDOW_WIDTH // 2
+        title_image_y = WINDOW_HEIGHT - 100
+        title_image_scale = 0.6  # You might need to adjust this if your title is too large
+        arcade.draw_scaled_texture_rectangle(title_image_x, title_image_y, self.title_image, title_image_scale)
         for button in self.buttons:
             button.draw()
 

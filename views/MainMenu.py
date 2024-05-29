@@ -22,11 +22,11 @@ class MainView(arcade.View):
         self.title_image = arcade.load_texture(TITLE_IMAGE_PATH)
 
         # Crear botones de menú
-        scale = 0.5
-        self.buttons.append(Button(JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 500, self.on_click_play, scale=scale))
-        self.buttons.append(Button(OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 650, self.on_click_options, scale=scale))
-        self.buttons.append(Button(COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 800, self.on_click_how_to_play, scale=scale))
-        self.buttons.append(Button(SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 950, self.on_click_exit, scale=scale))
+        scale = 0.35
+        self.buttons.append(Button(JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 400, self.on_click_play, scale=scale))
+        self.buttons.append(Button(OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 500, self.on_click_options, scale=scale))
+        self.buttons.append(Button(COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 600, self.on_click_how_to_play, scale=scale))
+        self.buttons.append(Button(SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 700, self.on_click_exit, scale=scale))
 
         # Calcular el ancho máximo de los botones
         self.max_button_width = max(button.width for button in self.buttons)
@@ -60,7 +60,7 @@ class MainView(arcade.View):
         
         title_image_x = WINDOW_WIDTH // 2
         title_image_y = WINDOW_HEIGHT - 200
-        title_image_scale = 1  # You might need to adjust this if your title is too large
+        title_image_scale = 0.8  # You might need to adjust this if your title is too large
         arcade.draw_scaled_texture_rectangle(title_image_x, title_image_y, self.title_image, title_image_scale)
 
         for button in self.buttons:
