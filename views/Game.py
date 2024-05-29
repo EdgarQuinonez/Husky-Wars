@@ -1,3 +1,4 @@
+from datetime import datetime
 import arcade, random, math
 from database.ConexionDB import ConexionBD
 from scripts.enemy import Aspersor, Frisbee
@@ -5,6 +6,7 @@ from setup import ASPERSOR_ID_PREFIX, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALIN
 from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
 from scripts.countdown import Countdown
+from views.GameOver import GameOver
 
 class MyGame(arcade.View):
     def __init__(self):
@@ -342,6 +344,17 @@ class MyGame(arcade.View):
     def on_key_release(self, key, modifiers):
         self.p1_sprite.on_key_release(key, modifiers)
         self.p2_sprite.on_key_release(key, modifiers)
+    
+    def on_game_over(self):
+        # Save the scores to the database
+        if self.GAME_STATE == GAME_STATE_GAME_OVER:
+            # Basically, setup Player class with player names. Where?
+            self.db.add_match_score("player1", self.GAME_DIFFICULTY, self.countdown.get_complete_match_duration(), self.p1_sprite.score, datetime.now())
+            self.db.add_match_score("player2", self.GAME_DIFFICULTY, self.countdown.get_complete_match_duration(), self.p2_sprite.score, datetime.now())
+                        
+            # Open game over view (winner/loser total score, scoreboard and play again buttons)
+            self.game_over_view = GameOver(self.p1_sprite.score, self.p2_sprite.score)
+            self.window.show_view(self.game_over_view)
             
     def on_update(self, delta_time: float):        
         if self.GAME_STATE == GAME_STATE_START_MATCH_COUNTDOWN:
@@ -389,8 +402,8 @@ class MyGame(arcade.View):
             # Countdown Check and Match Reset
             self.countdown_text = f"{self.countdown.remaining_time}"
             # Game Over
-            if self.countdown.remaining_time <= 0:
-                # Open game over view (winner/loser total score, scoreboard and play again buttons)
-                # self.GAME_STATE = GAME_STATE_GAME_OVER
+            if self.countdown.remaining_time <= 0:                
+                self.GAME_STATE = GAME_STATE_GAME_OVER
+                self.on_game_over()
                 self.countdown.stop()
-                self.setup()  # Reset the game when the countdown reaches 0
+                self.on_game_over()

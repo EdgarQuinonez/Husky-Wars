@@ -1,7 +1,7 @@
 import arcade
 
 from components.button import Button
-from setup import WINDOW_HEIGHT, WINDOW_WIDTH
+from setup import DIFFICULTY_HARD, DIFFICULTY_REGULAR, WINDOW_HEIGHT, WINDOW_WIDTH
 from views.Game import MyGame
 from views.MainMenu import MainView
 
@@ -59,10 +59,12 @@ class DifficultyView(arcade.View):
                 button.action()
 
     def normal(self):
-        print("normal")
+        game_view = MyGame()
+        game_view.setup(DIFFICULTY_REGULAR)
+        self.window.show_view(game_view)
 
     def dificil(self):
         #self.click_sound.play()
         game_view = MyGame()
-        game_view.setup()
+        game_view.setup(DIFFICULTY_HARD)
         self.window.show_view(game_view)
