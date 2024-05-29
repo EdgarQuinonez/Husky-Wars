@@ -2,7 +2,7 @@ from datetime import datetime
 import arcade, random, math
 from database.ConexionDB import ConexionBD
 from scripts.enemy import Aspersor, Frisbee
-from setup import ASPERSOR_ID_PREFIX, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_HARD_RESET_COOLDOWN, COLLECTIBLE_SOUND_PATH, COLLECTIBLE_SPAWN_COOLDOWN, DIFFICULTY_HARD, FALLING_SOUND_PATH, FRISBEE_ID_PREFIX, FRISBEE_SCALING, FRISBEE_SPEED, FRISBEE_SPRITE_PATH, GAME_STATE_GAME_OVER, GAME_STATE_GAMEPLAY, GAME_STATE_START_MATCH_COUNTDOWN, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, LETTERBOX_HEIGHT, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_POWER_UP, OBJECT_NAME_PROJECTILE, OBJECT_NAME_TRAILS, P1_ID, P2_ID, POWER_UP_COOLDOWN, POWER_UP_DROP_RATE, POWER_UP_PATH, POWER_UP_POINTS, POWER_UP_SOUND_PATH, POWER_UP_TIME_INCREASE, PROJECTILE_SOUND_PATH, WINDOW_WIDTH, WINDOW_HEIGHT, SCREEN_TITLE, START_MATCH_COUNTDOWN_VALUE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
+from setup import ASPERSOR_ID_PREFIX, ASPERSOR_PROJECTILE_SPEED, ASPERSOR_SCALING, ASPERSOR_SPRITE_PATH, BAD_COLLECTIBLE_RARE_DROP_RATE, BAD_COLLECTIBLE_RARE_PATH, BAD_COLLECTIBLE_RARE_POINTS, BAD_COLLECTIBLE_UNCOMMON_DROP_RATE, BAD_COLLECTIBLE_UNCOMMON_PATH, BAD_COLLECTIBLE_UNCOMMON_POINTS, COLLECTIBLE_HARD_RESET_COOLDOWN, COLLECTIBLE_SOUND_PATH, COLLECTIBLE_SPAWN_COOLDOWN, COUNTDOWN_BG_SCALE, COUNTDOWN_BG_X, COUNTDOWN_BG_Y, COUNTDOWN_DECORATION_HARD, COUNTDOWN_DECORATION_REGULAR, COUNTDOWN_TEXT_COLOR, COUNTDOWN_TEXT_PIXEL_SIZE, COUNTDOWN_TEXT_X, COUNTDOWN_TEXT_Y, DIFFICULTY_HARD, DIFFICULTY_REGULAR, FALLING_SOUND_PATH, FRISBEE_ID_PREFIX, FRISBEE_SCALING, FRISBEE_SPEED, FRISBEE_SPRITE_PATH, GAME_STATE_GAME_OVER, GAME_STATE_GAMEPLAY, GAME_STATE_START_MATCH_COUNTDOWN, GOOD_COLLECTIBLE_RARE_DROP_RATE, GOOD_COLLECTIBLE_RARE_PATH, GOOD_COLLECTIBLE_RARE_POINTS, GOOD_COLLECTIBLE_UNCOMMON_DROP_RATE, GOOD_COLLECTIBLE_UNCOMMON_PATH, GOOD_COLLECTIBLE_UNCOMMON_POINTS, HURT_SOUND_PATH, JUMP_SOUND_PATH, LAYER_NAME_BACKGROUND, LAYER_NAME_METABACKGROUND, LETTERBOX_HEIGHT, OBJECT_ENEMY_ATTR, OBJECT_NAME_COLLECTIBLES, OBJECT_NAME_ENEMY_SPAWN, OBJECT_NAME_PLAYER_SPAWN, OBJECT_NAME_POWER_UP, OBJECT_NAME_PROJECTILE, OBJECT_NAME_TRAILS, P1_ID, P1_SCORE_SPRITE_PATH, P1_SCORE_SPRITE_X, P1_SCORE_SPRITE_Y, P2_ID, P2_SCORE_SPRITE_PATH, P2_SCORE_SPRITE_X, P2_SCORE_SPRITE_Y, POWER_UP_COOLDOWN, POWER_UP_DROP_RATE, POWER_UP_PATH, POWER_UP_POINTS, POWER_UP_SOUND_PATH, POWER_UP_TIME_INCREASE, PROJECTILE_SOUND_PATH, WINDOW_WIDTH, WINDOW_HEIGHT, SCREEN_TITLE, START_MATCH_COUNTDOWN_VALUE, TILE_SCALING, P1_STILL_PATH, P2_STILL_PATH, P1_SPEED, P2_SPEED, P1_KEYBINDINGS, P2_KEYBINDINGS, P1_JUMP_SPEED, P2_JUMP_SPEED, COLLECTIBLE_SCALING, GOOD_COLLECTIBLE_COMMON_PATH, P1_SCORE_X, P1_SCORE_Y, P2_SCORE_X, P2_SCORE_Y, GOOD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_POINTS, BAD_COLLECTIBLE_COMMON_PATH, GOOD_COLLECTIBLE_COMMON_DROP_RATE, BAD_COLLECTIBLE_COMMON_DROP_RATE, LAYER_NAME_PLATFORMS, RIGHT_FACING, LEFT_FACING, P1_ANIMATIONS_PATH, P2_ANIMATIONS_PATH, TILE_MAP_PATH, WATER_SOUND_PATH
 from scripts.player import Player
 from scripts.collectible import Coin, Trap, Powerup
 from scripts.countdown import Countdown
@@ -30,7 +30,8 @@ class MyGame(arcade.View):
         self.collectible_hard_reset_needed = False
         self.collectible_refresh_needed = False
         self.GAME_DIFFICULTY = None
-        self.GAME_STATE = None
+        self.GAME_STATE = None        
+        
         self.db = ConexionBD()
         
         self.collectible_sound = arcade.load_sound(COLLECTIBLE_SOUND_PATH)
@@ -46,7 +47,9 @@ class MyGame(arcade.View):
     def setup(self, difficulty):
         """Set up the game here. Call this function to restart the game."""
         
-        self.scene = arcade.Scene()
+        self.scene = arcade.Scene()   
+        
+                   
         self.time_since_power_up_spawn = 0
         self.time_since_collectibles_refresh = COLLECTIBLE_SPAWN_COOLDOWN
         self.time_since_collectibles_hard_reset = COLLECTIBLE_HARD_RESET_COOLDOWN
@@ -96,8 +99,8 @@ class MyGame(arcade.View):
         self.p1_sprite = Player(P1_STILL_PATH)
         self.p2_sprite = Player(P2_STILL_PATH)
         
-        self.p1_sprite.setup(platforms_layer, self.jump_sound, (P1_SCORE_X, P1_SCORE_Y), RIGHT_FACING, P1_ANIMATIONS_PATH, 0, self.player1_name, P1_JUMP_SPEED, P1_SPEED, P1_KEYBINDINGS, p1_spawn, self.hurt_sound, self.falling_sound)        
-        self.p2_sprite.setup(platforms_layer, self.jump_sound, (P2_SCORE_X, P2_SCORE_Y), LEFT_FACING, P2_ANIMATIONS_PATH, 0, self.player2_name, P2_JUMP_SPEED, P2_SPEED, P2_KEYBINDINGS, p2_spawn, self.hurt_sound, self.falling_sound)        
+        self.p1_sprite.setup(platforms_layer, self.jump_sound, (P1_SCORE_X, P1_SCORE_Y), RIGHT_FACING, P1_ANIMATIONS_PATH, 0, self.player1_name, P1_JUMP_SPEED, P1_SPEED, P1_KEYBINDINGS, p1_spawn, self.hurt_sound, self.falling_sound, P1_SCORE_SPRITE_PATH, (P1_SCORE_SPRITE_X, P1_SCORE_SPRITE_Y))        
+        self.p2_sprite.setup(platforms_layer, self.jump_sound, (P2_SCORE_X, P2_SCORE_Y), LEFT_FACING, P2_ANIMATIONS_PATH, 0, self.player2_name, P2_JUMP_SPEED, P2_SPEED, P2_KEYBINDINGS, p2_spawn, self.hurt_sound, self.falling_sound, P2_SCORE_SPRITE_PATH, (P2_SCORE_SPRITE_X, P2_SCORE_SPRITE_Y))        
         
         self.scene.add_sprite(OBJECT_NAME_PLAYER_SPAWN, self.p1_sprite)                        
         self.scene.add_sprite(OBJECT_NAME_PLAYER_SPAWN, self.p2_sprite)
@@ -110,9 +113,11 @@ class MyGame(arcade.View):
         self.scene.add_sprite_list(OBJECT_NAME_POWER_UP, self.power_up_list)
         self.generate_collectibles()                          
                 
-        self.countdown_text = "60"
         
         self.GAME_DIFFICULTY = difficulty
+        
+        self.setup_countdown_gui()      
+        
         self.GAME_STATE = GAME_STATE_START_MATCH_COUNTDOWN              
         self.start_countdown = Countdown(START_MATCH_COUNTDOWN_VALUE)
         self.start_countdown_text = str(START_MATCH_COUNTDOWN_VALUE)
@@ -133,29 +138,19 @@ class MyGame(arcade.View):
         for frisbee_id in self.fribees_ids:
             self.frisbees_objs[frisbee_id] = Frisbee(FRISBEE_SPRITE_PATH, FRISBEE_SCALING, self.get_enemy_spawn_point(frisbee_id), FRISBEE_SPEED, self.get_frisbee_trail(frisbee_id), frisbee_id)
             self.frisbees_objs[frisbee_id].setup(self.scene, self.water_sound, self.projectile_sound)
+    
+    def setup_countdown_gui(self):
+        self.countdown_bg = None
+        if self.GAME_DIFFICULTY == DIFFICULTY_HARD:
+            self.countdown_bg = arcade.Sprite(COUNTDOWN_DECORATION_HARD, COUNTDOWN_BG_SCALE)
+        elif self.GAME_DIFFICULTY == DIFFICULTY_REGULAR:
+            self.countdown_bg = arcade.Sprite(COUNTDOWN_DECORATION_REGULAR, COUNTDOWN_BG_SCALE)
+            
+        self.countdown_bg.center_x = COUNTDOWN_BG_X
+        self.countdown_bg.center_y = COUNTDOWN_BG_Y
         
-    # def center_tile_map(self):
-    #     """Centers the tile map in the view by adjusting layer offsets."""
+        self.countdown_text = "01:00"        
 
-    #     # Calculate tile map center coordinates
-    #     tile_map_center_x = self.tile_map.width * TILE_SCALING // 2
-    #     tile_map_center_y = self.tile_map.height * TILE_SCALING // 2
-
-    #     # Calculate view center coordinates
-    #     view_center_x = self.window.width // 2
-    #     view_center_y = self.window.height // 2
-
-    #     # Calculate the translation needed to center the tile map
-    #     translation_x = view_center_x - tile_map_center_x
-    #     translation_y = view_center_y - tile_map_center_y
-        
-    #     print(self.tile_map.offset)
-
-    #     # Apply the offset to each layer in the tilemap
-    #     # for layer_name in self.tile_map.offset:
-    #     #     layer = self.tile_map.layers[layer_name]  # Get the layer by name from tile_map
-    #     #     if isinstance(layer, arcade.SpriteList):
-    #     #         layer.move(translation_x, translation_y) 
                     
     def get_player_spawn_point(self, player_id):                
         for spawn in self.player_spawn_objs:
@@ -330,28 +325,26 @@ class MyGame(arcade.View):
         for frisbee in self.frisbees_objs.values():
             frisbee.update(delta_time)
                                                                                                            
-    def on_draw(self):
-        """Render the screen."""        
-        """Render the screen."""
-    
+    def on_draw(self):                    
         self.clear()
         scale_x = self.window.width / WINDOW_WIDTH
         scale_y = self.window.height / WINDOW_HEIGHT
-
-        # Apply the scaling factors and set the viewport
+        
         arcade.set_viewport(0, self.window.width / scale_x, 0, self.window.height / scale_y)
-        
-        
-        self.scene.draw()        
+            
+        self.scene.draw()
+        self.countdown_bg.draw()        
         self.p1_sprite.draw_gui()
         self.p2_sprite.draw_gui()
+        
         arcade.draw_text(
             self.countdown_text,
-            WINDOW_WIDTH // 2,
-            WINDOW_HEIGHT - 30,
-            arcade.csscolor.WHITE,
-            30,
+            COUNTDOWN_TEXT_X,
+            COUNTDOWN_TEXT_Y,
+            COUNTDOWN_TEXT_COLOR,
+            COUNTDOWN_TEXT_PIXEL_SIZE,
             anchor_x="center",
+            bold=True,
         )
         
         if self.GAME_STATE == GAME_STATE_START_MATCH_COUNTDOWN:
@@ -359,9 +352,10 @@ class MyGame(arcade.View):
                 self.start_countdown_text,
                 WINDOW_WIDTH // 2,
                 WINDOW_HEIGHT // 2,
-                arcade.csscolor.WHITE,
-                30,
+                arcade.color.TIMBERWOLF,
+                128,
                 anchor_x="center",
+                bold=True,
             )
 
     def on_key_press(self, key, modifiers):
@@ -427,7 +421,7 @@ class MyGame(arcade.View):
                 self.spawn_enemies(delta_time)
             
             # Countdown Check and Match Reset
-            self.countdown_text = f"{self.countdown.remaining_time}"
+            self.countdown_text = f"{self.countdown.remaining_time_string}"
             # Game Over
             if self.countdown.remaining_time <= 0:                
                 self.GAME_STATE = GAME_STATE_GAME_OVER
