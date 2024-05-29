@@ -1,7 +1,7 @@
 import arcade
 import arcade.key
 import arcade.key
-from setup import CHARACTER_SCALING, FALLING_PENALIZATION_POINTS, GRAVITY, HURT_TIMER_DURATION, LEFT_FACING, RIGHT_FACING, SCORE_COLOR, SCORE_PIXEL_SIZE
+from setup import CHARACTER_SCALING, FALLING_PENALIZATION_POINTS, GRAVITY, HURT_TIMER_DURATION, LEFT_FACING, RIGHT_FACING, SCORE_COLOR, SCORE_PIXEL_SIZE, SCORE_SPRITE_SCALE
 
 def load_texture_pair(filename):
     """
@@ -72,7 +72,7 @@ class Player(arcade.Sprite):
         self.hurt_sound = hurt_sound
         self.falling_sound = falling_sound
         self.idle_texture_pair = load_texture_pair(f"{self.animations_main_path}/idle.png")        
-        self.score_sprite = arcade.Sprite(score_sprite, 1)
+        self.score_sprite = arcade.Sprite(score_sprite, SCORE_SPRITE_SCALE)
         self.score_sprite_x, self.score_sprite_y = score_sprite_position
         
         
