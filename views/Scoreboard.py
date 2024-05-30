@@ -1,8 +1,9 @@
 import arcade
 import arcade.gui
 
+from components.button import Button
 from database.ConexionDB import ConexionBD
-from setup import CUSTOM_FONT_PATH, SCOREBOARD_BG_PATH
+from setup import CUSTOM_FONT_PATH, SCOREBOARD_BG_PATH, TITLE_SCOREBOARD_PATH, WINDOW_HEIGHT, WINDOW_WIDTH, MENU_BUTTON_PATH, MENU_HOVER_BUTTON_PATH
 from views.MainMenu import MainView
 
 class ScoreboardView(arcade.View):
@@ -12,18 +13,14 @@ class ScoreboardView(arcade.View):
         self.ui_manager = arcade.gui.UIManager()
         self.background_image = None
         self.gameplay_font = arcade.load_font(CUSTOM_FONT_PATH)
+
+        self.buttons = []
+        self.selected_button_index = 0
+
         
     def setup(self):        
         self.background_image = arcade.load_texture(SCOREBOARD_BG_PATH)        
         main_layout = arcade.gui.UIBoxLayout(vertical=True)
-        
-        title_label = arcade.gui.UILabel(
-            text="Scoreboard",                        
-            font_size=64, 
-            bold=True, 
-            font_name=self.gameplay_font
-        )
-        main_layout.add(arcade.gui.UIAnchorWidget(child=title_label, anchor_x="center", anchor_y="top"))
         
         table_headers = arcade.gui.UIBoxLayout(vertical=False)
         for header_text in ["Nombre", "Puntos", "Duración total"]:
@@ -83,6 +80,12 @@ class ScoreboardView(arcade.View):
     def on_draw(self):
         self.clear()
         arcade.draw_lrwh_rectangle_textured(0, 0, self.window.width, self.window.height, self.background_image)
+        title_image_x = WINDOW_WIDTH // 2
+        title_image_y = WINDOW_HEIGHT - 100
+        title_image_scale = 0.6  # You might need to adjust this if your title is too large
+        arcade.draw_scaled_texture_rectangle(title_image_x, title_image_y, self.title_image, title_image_scale)
+        for button in self.buttons:
+            button.draw()
         self.ui_manager.draw()
 
     # def on_back_button_click(self, event):        
@@ -91,6 +94,12 @@ class ScoreboardView(arcade.View):
     #     self.window.show_view(game_over_view)                 
 
     def on_show_view(self):
+        self.title_image = arcade.load_texture(TITLE_SCOREBOARD_PATH)
+        # Buttons
+        scale = 0.3
+        self.buttons.append(
+            Button(MENU_BUTTON_PATH, MENU_HOVER_BUTTON_PATH, WINDOW_WIDTH // 5,
+                   WINDOW_HEIGHT // 8, self.menu, scale=scale))
         self.setup()
         
     def on_hide_view(self):        
@@ -99,3 +108,31 @@ class ScoreboardView(arcade.View):
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
             self.window.show_view(MainView())
+        elif key == arcade.key.UP:
+            self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+            self.selected_button_index = (self.selected_button_index - 1) % len(self.buttons)
+            self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+        elif key == arcade.key.DOWN:
+            self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+            self.selected_button_index = (self.selected_button_index + 1) % len(self.buttons)
+            self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+        elif key == arcade.key.SPACE:
+            self.buttons[self.selected_button_index].action()
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        for index, button in enumerate(self.buttons):
+            if button.check_mouse_hover(x, y):
+                self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+                self.selected_button_index = index
+                self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        for index, button in enumerate(self.buttons):
+            if button.check_mouse_hover(x, y):
+                self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+                self.selected_button_index = index
+                self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+                button.action()
+
+    def menu(self):
+        self.window.show_view(MainView())
