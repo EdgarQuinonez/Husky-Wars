@@ -3,14 +3,22 @@ import arcade
 from setup import WINDOW_HEIGHT, WINDOW_WIDTH, BG_EXTRA_PATH, TITLE_OPTIONS_PATH, SI_BUTTON_PATH, SI_HOVER_BUTTON_PATH, SUBTITLE_MUSIC_PATH, NO_BUTTON_PATH, NO_HOVER_BUTTON_PATH
 from views.MainMenu import MainView
 from components.button import Button
+from settings import Settings
+
+settings = Settings.get_instance()
+
+
 
 
 class OptionView(arcade.View):
     def __init__(self):
         super().__init__()
+        self.is_music_playing = settings.music_is_playing 
+        print(self.is_music_playing)       
+        
         self.buttons = []
-        self.selected_button_index = 0  # Índice del botón seleccionado
-        self.max_button_width = 0  # Ancho máximo de los botones
+        self.selected_button_index = 0 
+        self.max_button_width = 0 
 
     def on_show(self):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
@@ -19,20 +27,49 @@ class OptionView(arcade.View):
         self.title_image = arcade.load_texture(TITLE_OPTIONS_PATH)
         self.second_title_image = arcade.load_texture(SUBTITLE_MUSIC_PATH)
 
-        # Crear botones de menú
-        scale = 0.35
-        self.buttons.append(Button(SI_BUTTON_PATH, SI_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 600,
-                                    self.music_action, scale=scale))
+        if self.is_music_playing:
+            # Crear botones de menú
+            scale = 0.35
+            self.buttons.append(Button(NO_BUTTON_PATH, NO_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 600,
+                                        self.music_action, scale=scale))
 
-        # Calcular el ancho máximo de los botones
-        self.max_button_width = max(button.width for button in self.buttons)
+            # Calcular el ancho máximo de los botones
+            self.max_button_width = max(button.width for button in self.buttons)
 
-        # Establecer el ancho de todos los botones con el ancho máximo
-        for button in self.buttons:
-            button.width = self.max_button_width
+            # Establecer el ancho de todos los botones con el ancho máximo
+            for button in self.buttons:
+                button.width = self.max_button_width
 
-        # Seleccionar el primer botón
-        self.buttons[self.selected_button_index].select()
+            # Seleccionar el primer botón
+            self.buttons[self.selected_button_index].select()
+            
+        else:
+                    
+            # Crear botones de menú
+            scale = 0.35
+                    
+            self.buttons.append(Button(SI_BUTTON_PATH, SI_HOVER_BUTTON_PATH, WINDOW_WIDTH // 2, WINDOW_HEIGHT - 600,
+                                            self.music_action, scale=scale))
+
+            # Calcular el ancho máximo de los botones
+            self.max_button_width = max(button.width for button in self.buttons)
+
+            # Establecer el ancho de todos los botones con el ancho máximo
+            for button in self.buttons:
+                button.width = self.max_button_width
+
+            # Seleccionar el primer botón
+            self.buttons[self.selected_button_index].select()
+            
+    def update_button_appearance(self):
+        if self.is_music_playing:
+            self.buttons[0] = Button(NO_BUTTON_PATH, NO_HOVER_BUTTON_PATH, 
+                                    WINDOW_WIDTH // 2, WINDOW_HEIGHT - 600,
+                                    self.music_action, scale=0.35)
+        else:
+            self.buttons[0] = Button(SI_BUTTON_PATH, SI_HOVER_BUTTON_PATH, 
+                                    WINDOW_WIDTH // 2, WINDOW_HEIGHT - 600,
+                                    self.music_action, scale=0.35)
 
     def on_draw(self):
         arcade.start_render()
@@ -82,9 +119,11 @@ class OptionView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         for index, button in enumerate(self.buttons):
             if button.check_mouse_hover(x, y):
-                self.buttons[self.selected_button_index].deselect()  # Deseleccionar el botón actual
+                self.buttons[self.selected_button_index].deselect()
                 self.selected_button_index = index
-                self.buttons[self.selected_button_index].select()  # Seleccionar el nuevo botón
+                self.buttons[self.selected_button_index].select()
+
+                
                 button.action()
 
     def on_key_press(self, key, modifiers):
@@ -92,4 +131,6 @@ class OptionView(arcade.View):
             self.window.show_view(MainView())
 
     def music_action(self):
-        pass
+        self.is_music_playing = not self.is_music_playing
+        settings.toggle_music()
+        self.update_button_appearance() 

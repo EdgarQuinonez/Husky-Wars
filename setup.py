@@ -17,6 +17,8 @@ CUSTOM_FONT_PATH = os.path.join(SCRIPT_DIR, "assets/fonts/Gameplay.ttf")
 COUNTDOWN_DECORATION_HARD = os.path.join(SCRIPT_DIR, "assets/buttons/countdown_hard.png")
 COUNTDOWN_DECORATION_REGULAR = os.path.join(SCRIPT_DIR, "assets/buttons/countdown_regular.png")
 
+START_COUNTDOWN_ANIMATION_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/numeros")
+
 MENU_BG_PATH = os.path.join(SCRIPT_DIR, "assets/background_menu.png")
 GAME_OVER_BG_PATH = os.path.join(SCRIPT_DIR, "assets/game_over_bg.png")
 SCOREBOARD_BG_PATH = os.path.join(SCRIPT_DIR, "assets/game_over_bg.png")
@@ -54,7 +56,8 @@ SCOREBOARD_HOVER_BUTTON_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/scoreboa
 
 # Paths to sound assets
 CLICK_SOUND_PATH = os.path.join(SCRIPT_DIR, "assets/sounds/Button.mp3")
-MENU_SOUNDTRACK_PATH = os.path.join(SCRIPT_DIR, "assets/sounds/menu_soundtrack.mp3")
+MENU_SOUNDTRACK_PATH = os.path.join(SCRIPT_DIR, "assets/sounds/gameplay_music.mp3")
+
 
 JUMP_SOUND_PATH = os.path.join(SCRIPT_DIR, "assets/sounds/jump.wav")
 FALLING_SOUND_PATH = os.path.join(SCRIPT_DIR, "assets/sounds/fall.wav")

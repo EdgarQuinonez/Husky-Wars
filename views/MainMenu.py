@@ -2,7 +2,9 @@ import arcade
 
 from components.button import Button
 from setup import CLICK_SOUND_PATH, COMO_BUTTON_PATH, COMO_HOVER_BUTTON_PATH, JUGAR_BUTTON_PATH, JUGAR_HOVER_BUTTON_PATH, MENU_BG_PATH, OPCIONES_BUTTON_PATH, OPCIONES_HOVER_BUTTON_PATH, SALIR_BUTTON_PATH, SALIR_HOVER_BUTTON_PATH, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE_IMAGE_PATH
+from settings import Settings
 
+settings = Settings.get_instance()
 
 class MainView(arcade.View):
     def __init__(self):
@@ -11,14 +13,12 @@ class MainView(arcade.View):
         self.background = None
         self.buttons = []
         self.selected_button_index = 0  # Índice del botón seleccionado
-        self.max_button_width = 0  # Ancho máximo de los botones
+        self.max_button_width = 0  # Ancho máximo de los botones                                
 
     def on_show(self):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
-
-        # Cargar la imagen de fondo
-        self.background = arcade.load_texture(MENU_BG_PATH)
-        # Cargar la imagen del título
+        
+        self.background = arcade.load_texture(MENU_BG_PATH)        
         self.title_image = arcade.load_texture(TITLE_IMAGE_PATH)
 
         # Crear botones de menú
@@ -37,10 +37,6 @@ class MainView(arcade.View):
 
         # Seleccionar el primer botón
         self.buttons[self.selected_button_index].select()
-
-        # Reproducir música de fondo
-        #soundtrack = arcade.Sound("menu_soundtrack.mp3", streaming=True)
-        #soundtrack.play(volume=0.5, loop=True)
 
         self.click_sound = arcade.Sound(CLICK_SOUND_PATH)
 
@@ -101,7 +97,7 @@ class MainView(arcade.View):
 
     def on_click_options(self):
         from views.OptionsMenu import OptionView
-        self.option_view = OptionView()  # Cambia a la vista del menú
+        self.option_view = OptionView()
         self.window.show_view(self.option_view)
         self.click_sound.play()
 
@@ -110,14 +106,10 @@ class MainView(arcade.View):
         
         self.hplay_view = HowPlayView()  # Cambia a la vista del menú
         self.window.show_view(self.hplay_view)
-        self.click_sound.play()
+        self.click_sound.play()            
 
     def on_click_exit(self):
         arcade.close_window()
 
     def close(self):
-        # Liberar recursos o realizar cualquier limpieza necesaria
-        # Por ejemplo, puedes cerrar conexiones a bases de datos, liberar texturas cargadas, etc.
-
-        # Cerrar la ventana actual
         arcade.close_window()

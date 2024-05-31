@@ -28,11 +28,9 @@ class Countdown:
     def _countdown(self):
         while self.remaining_time > 0:
             time.sleep(1)
-
-            # Calculate elapsed time since the last check (not the start of the match)
+            
             time_since_last_check = time.time() - (self.start_time + self.time_added) 
-
-            # Adjust remaining time based on elapsed time and added time
+            
             self.remaining_time = math.ceil(
                 self.match_duration_in_seconds + self.time_added - time_since_last_check
             )

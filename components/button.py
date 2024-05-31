@@ -13,8 +13,7 @@ class Button:
         self.width = self.image.width * self.scale
         self.height = self.image.height * self.scale
 
-    def draw(self):
-        # Draw the image with a tint if hovered or selected
+    def draw(self):        
         arcade.draw_texture_rectangle(self.x, self.y, self.width, self.height, self.current_image)
 
     def check_mouse_hover(self, x, y):
