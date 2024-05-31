@@ -1,14 +1,13 @@
 import arcade
 
-from setup import WINDOW_HEIGHT, WINDOW_WIDTH
+from setup import HOW_TO_PLAY_BG_PATH, WINDOW_HEIGHT, WINDOW_WIDTH
 from views.MainMenu import MainView
 
 
 class HowPlayView(arcade.View):
     def on_show(self):
-        arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
-        # Cargar la imagen de fondo
-        self.howplay = arcade.load_texture("assets/buttons/how_play.jpg")
+        arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)        
+        self.howplay = arcade.load_texture(HOW_TO_PLAY_BG_PATH)
 
     def on_draw(self):
         arcade.start_render()
