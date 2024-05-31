@@ -3,6 +3,7 @@ import arcade
 import arcade.key
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_PATH = os.path.join(SCRIPT_DIR, "database/sqlite.db")
 
 P1_ANIMATIONS_PATH = os.path.join(SCRIPT_DIR, "assets/character/p1")
 P2_ANIMATIONS_PATH = os.path.join(SCRIPT_DIR, "assets/character/p2")

@@ -1,12 +1,14 @@
 import sqlite3
 
+from setup import DATABASE_PATH
+
 class ConexionBD:
     def __init__(self):
         self.create_tables()
         
     @staticmethod
     def connect_db():
-        return sqlite3.connect("database/sqlite.db")
+        return sqlite3.connect(DATABASE_PATH)
     
     
     def create_tables(self):
