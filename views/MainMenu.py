@@ -91,9 +91,9 @@ class MainView(arcade.View):
 
     def on_click_play(self):
         from views.NamePlayer import NamePlayerView
-        self.click_sound.play()
         game_view = NamePlayerView()
         self.window.show_view(game_view)
+        self.click_sound.play()
 
     def on_click_options(self):
         from views.OptionsMenu import OptionView
