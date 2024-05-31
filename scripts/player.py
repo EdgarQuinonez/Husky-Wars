@@ -1,7 +1,7 @@
 import arcade
 import arcade.key
 import arcade.key
-from setup import CHARACTER_SCALING, FALLING_PENALIZATION_POINTS, GRAVITY, HURT_TIMER_DURATION, LEFT_FACING, RIGHT_FACING
+from setup import CHARACTER_SCALING, FALLING_PENALIZATION_POINTS, GRAVITY, HURT_TIMER_DURATION, LEFT_FACING, RIGHT_FACING, SCORE_COLOR, SCORE_PIXEL_SIZE, SCORE_SPRITE_SCALE
 
 def load_texture_pair(filename):
     """
@@ -56,7 +56,7 @@ class Player(arcade.Sprite):
 
                 
     
-    def setup(self, walls, jump_sound, score_position, face_direction, animations_path, score, name, jump_speed, speed, keybindings, spawn_position, hurt_sound, falling_sound):        
+    def setup(self, walls, jump_sound, score_position, face_direction, animations_path, score, name, jump_speed, speed, keybindings, spawn_position, hurt_sound, falling_sound, score_sprite, score_sprite_position):        
         self.physics_engine = arcade.PhysicsEnginePlatformer(self, walls, GRAVITY)
         self.jump_sound = jump_sound
         self.score_x, self.score_y = score_position        
@@ -72,6 +72,9 @@ class Player(arcade.Sprite):
         self.hurt_sound = hurt_sound
         self.falling_sound = falling_sound
         self.idle_texture_pair = load_texture_pair(f"{self.animations_main_path}/idle.png")        
+        self.score_sprite = arcade.Sprite(score_sprite, SCORE_SPRITE_SCALE)
+        self.score_sprite_x, self.score_sprite_y = score_sprite_position
+        
         
         # Load hurt textures
         for i in range(6):
@@ -107,13 +110,18 @@ class Player(arcade.Sprite):
             self.pressed_keys.discard(key)
             
     def draw_gui(self):
-        score_text = f"Score: {self.score}"
+        self.score_sprite.center_x = self.score_sprite_x
+        self.score_sprite.center_y = self.score_sprite_y
+        self.score_sprite.draw()
+        
+        score_text = f"{self.score}"
         arcade.draw_text(
             score_text,
             self.score_x,
             self.score_y,
-            arcade.csscolor.WHITE,
-            18,
+            SCORE_COLOR,
+            SCORE_PIXEL_SIZE,
+            bold=True,
         )
     
     def move(self):

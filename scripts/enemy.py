@@ -128,7 +128,7 @@ class Aspersor(Enemy):
 class Frisbee(Enemy):
     def __init__(self, image_path, scaling, spawn_point, speed, trail, id): 
         super().__init__(image_path, scaling, spawn_point)
-        self.trail = trail  # Pass the trail directly
+        self.trail = trail
         self.speed = speed
         self.id = id
         
