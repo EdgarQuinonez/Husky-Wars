@@ -55,7 +55,10 @@ RESTART_BUTTON_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/reiniciar_btn.png
 RESTART_HOVER_BUTTON_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/reiniciar_btn_hover.png")
 SCOREBOARD_BUTTON_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/scoreboard_btn.png")
 SCOREBOARD_HOVER_BUTTON_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/scoreboard_btn_hover.png")
-
+NORMAL_BUTTON_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/normalbtn.png")
+NORMAL_BUTTON_HOVER_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/normalbtn_hover.png")
+HARD_BUTTON_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/dificilbtn.png")
+HARD_BUTTON_HOVER_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/dificilbtn_hover.png")
 
 # Paths to sound assets
 CLICK_SOUND_PATH = os.path.join(SCRIPT_DIR, "assets/sounds/Button.mp3")

@@ -1,7 +1,7 @@
 import arcade
 
 from components.button import Button
-from setup import DIFFICULTY_HARD, DIFFICULTY_REGULAR, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE_DIFF_PATH, BG_EXTRA_PATH
+from setup import DIFFICULTY_HARD, DIFFICULTY_REGULAR, HARD_BUTTON_HOVER_PATH, HARD_BUTTON_PATH, NORMAL_BUTTON_HOVER_PATH, NORMAL_BUTTON_PATH, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE_DIFF_PATH, BG_EXTRA_PATH
 from views.Game import MyGame
 from views.MainMenu import MainView
 
@@ -26,10 +26,10 @@ class DifficultyView(arcade.View):
 
         scale = 0.5
         self.buttons.append(
-            Button("assets/buttons/normalbtn.png", "assets/buttons/normalbtn_hover.png", WINDOW_WIDTH - 1100,
+            Button(NORMAL_BUTTON_PATH, NORMAL_BUTTON_HOVER_PATH, WINDOW_WIDTH - 1100,
                    WINDOW_HEIGHT // 2, self.normal, scale=scale))
         self.buttons.append(
-            Button("assets/buttons/dificilbtn.png", "assets/buttons/dificilbtn_hover.png", WINDOW_WIDTH - 500,
+            Button(HARD_BUTTON_PATH, HARD_BUTTON_HOVER_PATH, WINDOW_WIDTH - 500,
                    WINDOW_HEIGHT // 2, self.dificil, scale=scale))
 
     def on_draw(self):
