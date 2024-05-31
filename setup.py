@@ -21,6 +21,7 @@ START_COUNTDOWN_ANIMATION_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/numero
 
 ICON_PATH = os.path.join(SCRIPT_DIR, "icon.png")
 MENU_BG_PATH = os.path.join(SCRIPT_DIR, "assets/background_menu.png")
+HOW_TO_PLAY_BG_PATH = os.path.join(SCRIPT_DIR, "assets/how_play.jpg")
 GAME_OVER_BG_PATH = os.path.join(SCRIPT_DIR, "assets/game_over_bg.png")
 SCOREBOARD_BG_PATH = os.path.join(SCRIPT_DIR, "assets/game_over_bg.png")
 BG_EXTRA_PATH = os.path.join(SCRIPT_DIR, "assets/bg_extra.png")
