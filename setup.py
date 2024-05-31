@@ -19,6 +19,7 @@ COUNTDOWN_DECORATION_REGULAR = os.path.join(SCRIPT_DIR, "assets/buttons/countdow
 
 START_COUNTDOWN_ANIMATION_PATH = os.path.join(SCRIPT_DIR, "assets/buttons/numeros")
 
+ICON_PATH = os.path.join(SCRIPT_DIR, "icon.png")
 MENU_BG_PATH = os.path.join(SCRIPT_DIR, "assets/background_menu.png")
 GAME_OVER_BG_PATH = os.path.join(SCRIPT_DIR, "assets/game_over_bg.png")
 SCOREBOARD_BG_PATH = os.path.join(SCRIPT_DIR, "assets/game_over_bg.png")
