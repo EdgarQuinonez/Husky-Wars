@@ -5,7 +5,7 @@ from views.MainMenu import MainView
 
 
 def main():
-    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, fullscreen=False)
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, fullscreen=False, center_window=True)
     main_view = MainView()
     window.show_view(main_view)
     
